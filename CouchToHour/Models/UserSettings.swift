@@ -2,8 +2,17 @@ import Foundation
 import SwiftData
 import UIWorkouts
 
-/// Single-row app settings. Later modules add mode / schedule / weekday fields;
-/// CTH-4 only needs the appearance choice.
+/// Which way the user runs the plan.
+enum TrainingMode: String, CaseIterable, Sendable {
+    /// Dated schedule: sessions land on concrete calendar dates.
+    case threeDay
+    /// No schedule: work through D1→D2→D3 of each week at your own cadence.
+    case free
+}
+
+/// Single-row app settings. CTH-4 added the appearance choice; CTH-5 adds the
+/// mode / schedule fields the engine needs. All new fields are defaulted so the
+/// first-launch row and the CTH-4 store both migrate cleanly.
 @Model
 final class UserSettings {
     /// Raw value of the selected ``WKThemeMode``. Stored as `String` so the
@@ -11,14 +20,48 @@ final class UserSettings {
     /// ``themeMode``.
     var themeModeRaw: String
 
-    init(themeMode: WKThemeMode = .system) {
+    /// Raw value of the selected ``TrainingMode``. Read through ``mode``.
+    /// Defaults are declared here (not just in `init`) so SwiftData lightweight
+    /// migration can add these columns to the existing CTH-4 store.
+    var modeRaw: String = TrainingMode.threeDay.rawValue
+
+    /// `Calendar` weekday the training week starts on, 1 (Sunday)…7 (Saturday).
+    /// Used only in 3-Day mode.
+    var startWeekday: Int = 2
+
+    /// Plan week the user begins at, 1…6 — lets an experienced runner skip ahead.
+    var startingWeek: Int = 1
+
+    /// Anchor date schedule generation counts forward from. Set at onboarding;
+    /// `nil` until then (and in Free mode).
+    var startDate: Date?
+
+    /// Placeholder for MVP+ local reminders. Unused in Step 1.
+    var notificationsEnabled: Bool = false
+
+    init(themeMode: WKThemeMode = .system,
+         mode: TrainingMode = .threeDay,
+         startWeekday: Int = 2,
+         startingWeek: Int = 1,
+         startDate: Date? = nil,
+         notificationsEnabled: Bool = false) {
         self.themeModeRaw = themeMode.rawValue
+        self.modeRaw = mode.rawValue
+        self.startWeekday = startWeekday
+        self.startingWeek = startingWeek
+        self.startDate = startDate
+        self.notificationsEnabled = notificationsEnabled
     }
 
     /// Computed — the `@Model` macro leaves it out of the persisted schema.
     var themeMode: WKThemeMode {
         get { WKThemeMode(rawValue: themeModeRaw) ?? .system }
         set { themeModeRaw = newValue.rawValue }
+    }
+
+    var mode: TrainingMode {
+        get { TrainingMode(rawValue: modeRaw) ?? .threeDay }
+        set { modeRaw = newValue.rawValue }
     }
 }
 
