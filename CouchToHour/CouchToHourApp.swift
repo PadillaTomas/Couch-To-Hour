@@ -15,8 +15,10 @@ struct CouchToHourApp: App {
 
             let container = try ModelContainer(for: CouchToHourSchema.schema)
             // First-launch: make sure the single settings row exists so every
-            // screen can bind to it synchronously.
+            // screen can bind to it synchronously, and seed the fixed 6-week
+            // plan. Both are idempotent — safe on every launch.
             UserSettings.current(in: container.mainContext)
+            PlanSeed.seed(into: container.mainContext)
             try? container.mainContext.save()
             modelContainer = container
         } catch {
