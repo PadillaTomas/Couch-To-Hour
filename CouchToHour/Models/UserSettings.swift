@@ -39,18 +39,24 @@ final class UserSettings {
     /// Placeholder for MVP+ local reminders. Unused in Step 1.
     var notificationsEnabled: Bool = false
 
+    /// First-run gate. `false` until onboarding finishes; once `true`, relaunch
+    /// goes straight to the app.
+    var onboardingCompleted: Bool = false
+
     init(themeMode: WKThemeMode = .system,
          mode: TrainingMode = .threeDay,
          startWeekday: Int = 2,
          startingWeek: Int = 1,
          startDate: Date? = nil,
-         notificationsEnabled: Bool = false) {
+         notificationsEnabled: Bool = false,
+         onboardingCompleted: Bool = false) {
         self.themeModeRaw = themeMode.rawValue
         self.modeRaw = mode.rawValue
         self.startWeekday = startWeekday
         self.startingWeek = startingWeek
         self.startDate = startDate
         self.notificationsEnabled = notificationsEnabled
+        self.onboardingCompleted = onboardingCompleted
     }
 
     /// Computed — the `@Model` macro leaves it out of the persisted schema.
@@ -62,6 +68,18 @@ final class UserSettings {
     var mode: TrainingMode {
         get { TrainingMode(rawValue: modeRaw) ?? .threeDay }
         set { modeRaw = newValue.rawValue }
+    }
+
+    /// Puts every plan/schedule field back to its first-run default and re-arms
+    /// the onboarding gate. The appearance theme is deliberately kept — it isn't
+    /// workout data.
+    func resetToFirstRun() {
+        mode = .threeDay
+        startWeekday = 2
+        startingWeek = 1
+        startDate = nil
+        notificationsEnabled = false
+        onboardingCompleted = false
     }
 }
 

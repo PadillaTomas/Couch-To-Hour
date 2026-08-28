@@ -59,10 +59,11 @@ enum PlanSeed {
     /// Inserts the plan graph if it is not already present. Safe to call on
     /// every launch — a second call with the plan already seeded is a no-op.
     static func seed(into context: ModelContext) {
-        let slug = WorkoutPlan.fixedSlug
-        var descriptor = FetchDescriptor<WorkoutPlan>(predicate: #Predicate { $0.slug == slug })
+        // There is only ever one plan — a plain fetch is enough, and avoids a
+        // #Predicate that can misbehave on an in-memory store.
+        var descriptor = FetchDescriptor<WorkoutPlan>()
         descriptor.fetchLimit = 1
-        if (try? context.fetch(descriptor))?.isEmpty == false { return }
+        if let existing = try? context.fetch(descriptor), !existing.isEmpty { return }
 
         let plan = WorkoutPlan()
         context.insert(plan)
