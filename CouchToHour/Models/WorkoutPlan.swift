@@ -25,6 +25,11 @@ final class WorkoutPlan {
 
     /// Weeks 1…6 in ascending order.
     var orderedWeeks: [WorkoutWeek] { weeks.sorted { $0.number < $1.number } }
+
+    /// The `WorkoutDay` at a `(week, day)` coordinate, or `nil` if out of range.
+    func day(week: Int, day: Int) -> WorkoutDay? {
+        orderedWeeks.first { $0.number == week }?.orderedDays.first { $0.number == day }
+    }
 }
 
 @Model

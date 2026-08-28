@@ -430,7 +430,7 @@
 /* Begin XCLocalSwiftPackageReference section */
 		C0FFEE00C0FFEE0000000010 /* XCLocalSwiftPackageReference "../UI-Workouts" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../UI-Workouts;
+			relativePath = "../UI-Workouts";
 		};
 /* End XCLocalSwiftPackageReference section */
 
