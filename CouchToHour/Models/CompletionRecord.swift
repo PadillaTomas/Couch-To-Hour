@@ -28,4 +28,12 @@ final class CompletionRecord {
         self.feltRating = feltRating
         self.photoPath = photoPath
     }
+
+    /// The `(week, day)` this completes, parsed back from ``workoutDayKey``
+    /// (`"W2D1"`).
+    var workoutCoordinate: (week: Int, day: Int)? {
+        let parts = workoutDayKey.dropFirst().split(separator: "D")
+        guard parts.count == 2, let week = Int(parts[0]), let day = Int(parts[1]) else { return nil }
+        return (week, day)
+    }
 }

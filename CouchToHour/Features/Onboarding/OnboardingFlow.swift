@@ -74,6 +74,11 @@ struct OnboardingFlow: View {
                     withAnimation(.snappy) { stepIndex -= 1 }
                 }
             }
+            #if DEBUG
+            WKButton("Skip with demo data", style: .quiet) {
+                DemoData.loadThreeDay(into: context)
+            }
+            #endif
         }
     }
 

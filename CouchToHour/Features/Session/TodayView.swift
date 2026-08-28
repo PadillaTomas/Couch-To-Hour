@@ -98,7 +98,7 @@ struct TodayView: View {
                     WKScreenHeader(
                         eyebrow: makeup ? "Making up a missed session" : "Today",
                         title: "Week \(week) · Day \(day)",
-                        body: "\(sessionPlan.totalSeconds / 60) min · \(runCount(sessionPlan)) run intervals"
+                        body: "\(sessionPlan.totalSeconds / 60) min · \(SessionPlan.summary(of: workoutDay))"
                     )
                     WKSegmentedTrack(segments: previewTrack(sessionPlan))
                     VStack(spacing: WKSpace.sm) {
@@ -176,10 +176,6 @@ struct TodayView: View {
     }
 
     // MARK: Helpers
-
-    private func runCount(_ plan: SessionPlan) -> Int {
-        plan.phases.filter { $0.phase == .run }.count
-    }
 
     private func previewTrack(_ plan: SessionPlan) -> [WKTrackSegment] {
         plan.phases.enumerated().map { index, phase in

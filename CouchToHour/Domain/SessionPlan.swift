@@ -32,6 +32,16 @@ extension SessionPlan {
         var runSeconds: Int
         var walkSeconds: Int?
         var repeatCount: Int
+
+        /// Terse label — clock times, only the words "Run"/"Walk":
+        /// "Run 1:00    Walk 1:00    ×10", "Run 50:00".
+        var line: String {
+            var text = walkSeconds == nil
+                ? "Run \(WKTimeFormat.clock(runSeconds))"
+                : "Run \(WKTimeFormat.clock(runSeconds))    Walk \(WKTimeFormat.clock(walkSeconds!))"
+            if repeatCount > 1 { text += "    ×\(repeatCount)" }
+            return text
+        }
     }
 
     /// The day's intervals collapsed back into their `(R / W) ×N` blocks — the
@@ -47,6 +57,21 @@ extension SessionPlan {
                 repeatCount: members.map(\.repeatCount).max() ?? 1
             )
         }
+    }
+
+    /// A one-line description of a day's structure, e.g.
+    /// "1 min run / 1 min walk ×10" or "5 min run / 1 min walk, then 40 min run / 1 min walk".
+    static func summary(of day: WorkoutDay) -> String {
+        func label(_ seconds: Int) -> String {
+            seconds % 60 == 0 ? "\(seconds / 60) min" : WKTimeFormat.clock(seconds)
+        }
+        return groups(of: day).map { group in
+            var part = group.walkSeconds == nil
+                ? "\(label(group.runSeconds)) run"
+                : "\(label(group.runSeconds)) run / \(label(group.walkSeconds!)) walk"
+            if group.repeatCount > 1 { part += " ×\(group.repeatCount)" }
+            return part
+        }.joined(separator: ", then ")
     }
 
     /// A few seconds per phase — the DEBUG "fast timer" on Today uses this to
