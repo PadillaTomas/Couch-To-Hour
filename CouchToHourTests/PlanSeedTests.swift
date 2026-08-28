@@ -11,7 +11,7 @@ final class PlanSeedTests: XCTestCase {
     }
 
     func testSeedsSixWeeksOfThreeDays() throws {
-        let context = try TestContainer.seeded().mainContext
+        let context = try seededContainer().mainContext
         let plan = try plan(in: context)
 
         XCTAssertEqual(plan.orderedWeeks.map(\.number), [1, 2, 3, 4, 5, 6])
@@ -22,7 +22,7 @@ final class PlanSeedTests: XCTestCase {
     }
 
     func testSeedIsIdempotent() throws {
-        let container = try TestContainer.seeded()
+        let container = try seededContainer()
         let context = container.mainContext
 
         // Snapshot counts, then reseed twice more.
@@ -57,7 +57,7 @@ final class PlanSeedTests: XCTestCase {
 
     /// Week 1 Day 2 is "(R1 / W1) ×1, then (R2 / W1) ×5" — two groups.
     func testWeek1Day2MatchesSpecNotation() throws {
-        let context = try TestContainer.seeded().mainContext
+        let context = try seededContainer().mainContext
         let plan = try plan(in: context)
         let day = plan.orderedWeeks[0].orderedDays[1]
 
@@ -77,7 +77,7 @@ final class PlanSeedTests: XCTestCase {
 
     /// Edge case: W6D3 is a single 50-minute continuous run, no walk interval.
     func testWeek6Day3IsOneContinuousRun() throws {
-        let context = try TestContainer.seeded().mainContext
+        let context = try seededContainer().mainContext
         let plan = try plan(in: context)
         let day = plan.orderedWeeks[5].orderedDays[2]
 

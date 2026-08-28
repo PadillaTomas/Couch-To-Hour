@@ -6,7 +6,7 @@ import XCTest
 final class DoneDetectionTests: XCTestCase {
 
     private func firstDay() throws -> (WorkoutDay, ModelContext) {
-        let context = try TestContainer.seeded().mainContext
+        let context = try seededContainer().mainContext
         let plan = try XCTUnwrap(context.fetch(FetchDescriptor<WorkoutPlan>()).first)
         return (plan.orderedWeeks[0].orderedDays[0], context)
     }

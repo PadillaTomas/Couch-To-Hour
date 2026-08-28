@@ -7,9 +7,10 @@ import UIWorkouts
 /// the taper/peak/recover sequencing is the point.
 @Model
 final class WorkoutPlan {
-    /// Stable key the idempotent seed looks the plan up by. There is only ever
-    /// one row.
-    @Attribute(.unique) var slug: String
+    /// Stable identifier for the one fixed plan. Not a `.unique` attribute —
+    /// SwiftData's unique constraints trap on in-memory stores (used by the
+    /// tests), and ``PlanSeed`` already guards against a second plan.
+    var slug: String
     var title: String
 
     @Relationship(deleteRule: .cascade, inverse: \WorkoutWeek.plan)

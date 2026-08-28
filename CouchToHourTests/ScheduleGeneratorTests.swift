@@ -72,7 +72,7 @@ final class ScheduleGeneratorTests: XCTestCase {
     }
 
     func testApplyWritesAndClearsScheduledDates() throws {
-        let context = try TestContainer.seeded().mainContext
+        let context = try seededContainer().mainContext
         let plan = try XCTUnwrap(context.fetch(FetchDescriptor<WorkoutPlan>()).first)
 
         ScheduleGenerator.apply(to: plan, startingWeek: 1, startWeekday: 2,
@@ -85,7 +85,7 @@ final class ScheduleGeneratorTests: XCTestCase {
     }
 
     func testApplyWithLaterStartingWeekClearsEarlierWeeks() throws {
-        let context = try TestContainer.seeded().mainContext
+        let context = try seededContainer().mainContext
         let plan = try XCTUnwrap(context.fetch(FetchDescriptor<WorkoutPlan>()).first)
 
         ScheduleGenerator.apply(to: plan, startingWeek: 3, startWeekday: 2,

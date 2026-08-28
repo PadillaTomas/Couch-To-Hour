@@ -6,7 +6,7 @@ import XCTest
 final class FreeProgressionTests: XCTestCase {
 
     private func makePlan() throws -> (WorkoutPlan, ModelContext) {
-        let context = try TestContainer.seeded().mainContext
+        let context = try seededContainer().mainContext
         let plan = try XCTUnwrap(context.fetch(FetchDescriptor<WorkoutPlan>()).first)
         return (plan, context)
     }

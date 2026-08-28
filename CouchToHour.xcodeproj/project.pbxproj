@@ -156,7 +156,7 @@
 			mainGroup = C0FFEE00C0FFEE0000000002;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				C0FFEE00C0FFEE0000000010 /* XCRemoteSwiftPackageReference "UI-Workouts" */,
+				C0FFEE00C0FFEE0000000010 /* XCLocalSwiftPackageReference "../UI-Workouts" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = C0FFEE00C0FFEE0000000003 /* Products */;
@@ -427,26 +427,20 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		C0FFEE00C0FFEE0000000010 /* XCRemoteSwiftPackageReference "UI-Workouts" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/PadillaTomas/UI-Workouts.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.2.0;
-			};
+/* Begin XCLocalSwiftPackageReference section */
+		C0FFEE00C0FFEE0000000010 /* XCLocalSwiftPackageReference "../UI-Workouts" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../UI-Workouts;
 		};
-/* End XCRemoteSwiftPackageReference section */
+/* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		C0FFEE00C0FFEE0000000011 /* UIWorkouts */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = C0FFEE00C0FFEE0000000010 /* XCRemoteSwiftPackageReference "UI-Workouts" */;
 			productName = UIWorkouts;
 		};
 		C0FFEE00C0FFEE000000001F /* UIWorkouts */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = C0FFEE00C0FFEE0000000010 /* XCRemoteSwiftPackageReference "UI-Workouts" */;
 			productName = UIWorkouts;
 		};
 /* End XCSwiftPackageProductDependency section */
