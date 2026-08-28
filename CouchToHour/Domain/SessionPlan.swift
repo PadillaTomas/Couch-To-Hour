@@ -26,6 +26,37 @@ struct SessionPlan: Equatable {
 }
 
 extension SessionPlan {
+    /// One `(R / W) ×N` block of a day, for the grouped session list.
+    struct Group: Equatable, Identifiable {
+        var id: Int
+        var runSeconds: Int
+        var walkSeconds: Int?
+        var repeatCount: Int
+    }
+
+    /// The day's intervals collapsed back into their `(R / W) ×N` blocks — the
+    /// shape the plan is written in, rather than the flattened phase list.
+    static func groups(of day: WorkoutDay) -> [Group] {
+        let byGroup = Dictionary(grouping: day.orderedIntervals, by: \.group)
+        return byGroup.keys.sorted().map { key in
+            let members = byGroup[key]!
+            return Group(
+                id: key,
+                runSeconds: members.first { $0.phase == .run }?.durationSeconds ?? 0,
+                walkSeconds: members.first { $0.phase == .walk }?.durationSeconds,
+                repeatCount: members.map(\.repeatCount).max() ?? 1
+            )
+        }
+    }
+
+    /// A few seconds per phase — the DEBUG "fast timer" on Today uses this to
+    /// walk the timer → rating flow without waiting out real durations.
+    static let fastTest = SessionPlan(phases: [
+        .init(phase: .run, seconds: 5),
+        .init(phase: .walk, seconds: 3),
+        .init(phase: .run, seconds: 5),
+    ])
+
     init(day: WorkoutDay) {
         self.init(intervals: day.orderedIntervals)
     }
