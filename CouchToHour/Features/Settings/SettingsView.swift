@@ -31,6 +31,19 @@ struct SettingsView: View {
                     .background(WKColor.surface)
                     .clipShape(RoundedRectangle(cornerRadius: WKRadius.card, style: .continuous))
                 }
+
+                #if DEBUG
+                VStack(alignment: .leading, spacing: WKSpace.md) {
+                    WKSectionHeader("Debug")
+                    WKButton("Load demo (3-Day, mid-plan)", style: .secondary) {
+                        DemoData.loadThreeDay(into: modelContext)
+                    }
+                    Text("3-Day mode, schedule anchored ~2.5 weeks back: past sessions completed, future ones scheduled. Reset to clear.")
+                        .wkFont(.caption)
+                        .foregroundStyle(WKColor.textTertiary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                #endif
             }
             .padding(WKSpace.lg)
         }
