@@ -6,6 +6,8 @@ import UIWorkouts
 /// it. Calls back when the session finishes or the user ends it.
 struct TimerView: View {
     let plan: SessionPlan
+    /// Which plan session this is — the key the resume snapshot is stored under.
+    let key: SessionKey
     /// Session ran to the end. Passes the elapsed seconds for the record.
     var onFinish: (_ elapsedSeconds: Int) -> Void
     /// User bailed out early — nothing is logged.
@@ -13,14 +15,23 @@ struct TimerView: View {
 
     @State private var model: SessionTimerModel
     @State private var showExitConfirm = false
+    @Environment(\.scenePhase) private var scenePhase
 
     init(plan: SessionPlan,
+         key: SessionKey,
+         resume: InProgressSession? = nil,
+         dimsOtherAudio: Bool = true,
          onFinish: @escaping (Int) -> Void,
          onExit: @escaping () -> Void) {
         self.plan = plan
+        self.key = key
         self.onFinish = onFinish
         self.onExit = onExit
-        _model = State(initialValue: SessionTimerModel(plan: plan, tones: SystemTonePlayer()))
+        let tones = SessionCuePlayer(dimsOtherAudio: dimsOtherAudio)
+        let model = (resume?.key == key)
+            ? SessionTimerModel.resuming(resume!, tones: tones)
+            : SessionTimerModel(plan: plan, tones: tones)
+        _model = State(initialValue: model)
     }
 
     private var dialState: WKTimerDial.State {
@@ -71,22 +82,46 @@ struct TimerView: View {
         .onAppear {
             model.start()
             UIApplication.shared.isIdleTimerDisabled = true
+            persistSnapshot()
         }
         .onDisappear {
             model.stop()
             UIApplication.shared.isIdleTimerDisabled = false
         }
         .onChange(of: model.state) { _, newState in
-            if newState == .finished { onFinish(model.elapsedSeconds) }
+            if newState == .finished {
+                SessionResumeStore.clear()
+                onFinish(model.elapsedSeconds)
+            } else {
+                persistSnapshot()   // pause / resume
+            }
+        }
+        .onChange(of: model.segmentIndex) { _, _ in persistSnapshot() }
+        .onChange(of: scenePhase) { _, phase in
+            // The per-second task is suspended while backgrounded — catch the
+            // countdown up to real elapsed time on the way back, and keep the
+            // resume snapshot current across the transition either way.
+            if phase == .active { model.syncToWallClock() }
+            persistSnapshot()
         }
         .alert("End the session?", isPresented: $showExitConfirm) {
             Button("End", role: .destructive) {
                 model.stop()
+                SessionResumeStore.clear()
                 onExit()
             }
             Button("Keep going", role: .cancel) {}
         } message: {
-            Text("It won't be marked done.")
+            Text("It won't be marked done, and your progress is discarded.")
+        }
+    }
+
+    /// Write (or clear) the resume snapshot for the current session state.
+    private func persistSnapshot() {
+        if let snapshot = model.makeSnapshot(for: key) {
+            SessionResumeStore.save(snapshot)
+        } else {
+            SessionResumeStore.clear()
         }
     }
 }
@@ -98,6 +133,7 @@ struct TimerView: View {
             .init(phase: .walk, seconds: 5),
             .init(phase: .run, seconds: 8),
         ]),
+        key: SessionKey(week: 1, day: 1, makeup: false),
         onFinish: { _ in },
         onExit: {}
     )

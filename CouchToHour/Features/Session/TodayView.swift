@@ -19,11 +19,13 @@ struct TodayView: View {
     private enum Flow: Identifiable {
         /// `fast` compresses the plan to a few seconds per phase — DEBUG only,
         /// for walking the screen flow without waiting out real durations.
-        case timer(WorkoutDay, fast: Bool)
+        /// `resume` picks up a persisted in-progress session for this day.
+        case timer(WorkoutDay, key: SessionKey, fast: Bool, resume: Bool)
         case rating(CompletionRecord)
         var id: String {
             switch self {
-            case .timer(let d, let fast): return "timer-\(d.persistentModelID.hashValue)-\(fast)"
+            case .timer(let d, let key, let fast, let resume):
+                return "timer-\(d.persistentModelID.hashValue)-\(key.week)-\(key.day)-\(key.makeup)-\(fast)-\(resume)"
             case .rating(let r): return "rating-\(r.persistentModelID.hashValue)"
             }
         }
@@ -52,9 +54,12 @@ struct TodayView: View {
         }
         .fullScreenCover(item: $flow) { flow in
             switch flow {
-            case .timer(let day, let fast):
+            case .timer(let day, let key, let fast, let resume):
                 TimerView(
                     plan: fast ? .fastTest : SessionPlan(day: day),
+                    key: key,
+                    resume: resume ? SessionResumeStore.load() : nil,
+                    dimsOtherAudio: settings?.dimOtherAudioDuringCues ?? true,
                     onFinish: { elapsed in finish(day, elapsedSeconds: elapsed) },
                     onExit: { self.flow = nil }
                 )
@@ -112,12 +117,27 @@ struct TodayView: View {
                 .padding(WKSpace.lg)
             }
             .safeAreaInset(edge: .bottom) {
+                let key = SessionKey(week: week, day: day, makeup: makeup)
+                let canResume = SessionResumeStore.load()?.key == key
                 WKFooterActions {
-                    WKButton("Start session") { flow = .timer(workoutDay, fast: false) }
+                    if canResume {
+                        WKButton("Resume session") {
+                            flow = .timer(workoutDay, key: key, fast: false, resume: true)
+                        }
+                        WKButton("Start over", style: .quiet) {
+                            SessionResumeStore.clear()
+                            flow = .timer(workoutDay, key: key, fast: false, resume: false)
+                        }
+                    } else {
+                        WKButton("Start session") {
+                            SessionResumeStore.clear()
+                            flow = .timer(workoutDay, key: key, fast: false, resume: false)
+                        }
+                    }
                     WKButton("Mark done", style: .quiet) { markDone(workoutDay) }
                     #if DEBUG
                     WKButton("Test: fast timer", style: .quiet) {
-                        flow = .timer(workoutDay, fast: true)
+                        flow = .timer(workoutDay, key: key, fast: true, resume: false)
                     }
                     #endif
                 }
