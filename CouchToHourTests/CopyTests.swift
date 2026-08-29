@@ -20,7 +20,7 @@ final class CopyTests: XCTestCase {
             Copy.Onboarding.threeDayTitle, Copy.Onboarding.threeDayBody,
             Copy.Onboarding.freeTitle, Copy.Onboarding.freeBody,
             Copy.Onboarding.startingWeekTitle, Copy.Onboarding.startingWeekBody,
-            Copy.Onboarding.startWeekdayTitle, Copy.Onboarding.startWeekdayBody,
+
             Copy.Onboarding.philosophyTitle, Copy.Onboarding.philosophyBody1, Copy.Onboarding.philosophyBody2,
             Copy.Onboarding.footerContinue, Copy.Onboarding.footerStart, Copy.Onboarding.footerBack,
 

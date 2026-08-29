@@ -1,8 +1,8 @@
 import Foundation
 
-/// 3-Day mode schedule generation: a start weekday plus an anchor date become
-/// concrete dated sessions, one rest day between each, covering every remaining
-/// week of the plan. Pure — the persistence side lives in ``apply(to:...)``.
+/// 3-Day mode schedule generation: a **start date** becomes concrete dated
+/// sessions, one rest day between each, covering every remaining week of the
+/// plan. Pure — the persistence side lives in ``apply(to:...)``.
 enum ScheduleGenerator {
 
     struct Slot: Equatable {
@@ -13,33 +13,31 @@ enum ScheduleGenerator {
 
     /// - Parameters:
     ///   - startingWeek: first plan week to schedule (1…6).
-    ///   - startWeekday: `Calendar` weekday the training week starts on,
-    ///     1 (Sunday)…7 (Saturday). Each week's D1 lands on this weekday.
-    ///   - anchor: reference "now". The first D1 is the first `startWeekday`
-    ///     on or after the start of `anchor`'s day (so an anchor already on the
-    ///     start weekday schedules D1 for that same day).
+    ///   - startingDay: first plan day within `startingWeek` (1…3). Earlier days
+    ///     of that week are omitted.
+    ///   - startDate: the day `(startingWeek, startingDay)` happens. Every other
+    ///     session is counted forward from here.
     ///
     /// Within a week: D1 → D2 → D3 are two days apart (one rest day between).
-    /// Between weeks: each D1 is exactly 7 days after the previous week's D1.
+    /// Between weeks: each week's D1 is exactly 7 days after the previous week's.
     static func schedule(startingWeek: Int,
-                         startWeekday: Int,
-                         anchor: Date,
+                         startingDay: Int = 1,
+                         startDate: Date,
                          calendar: Calendar = .current) -> [Slot] {
-        guard (1...6).contains(startingWeek) else { return [] }
+        guard (1...6).contains(startingWeek), (1...3).contains(startingDay) else { return [] }
 
-        let startOfAnchor = calendar.startOfDay(for: anchor)
-        let anchorWeekday = calendar.component(.weekday, from: startOfAnchor)
-        let leadDays = ((startWeekday - anchorWeekday) % 7 + 7) % 7
-        guard let firstD1 = calendar.date(byAdding: .day, value: leadDays, to: startOfAnchor) else {
-            return []
-        }
+        let firstSession = calendar.startOfDay(for: startDate)
+        // Where D1 of `startingWeek` sits (maybe before `firstSession`) so that
+        // (startingWeek, startingDay) lands exactly on it.
+        guard let weekD1 = calendar.date(byAdding: .day,
+                                         value: -(startingDay - 1) * 2, to: firstSession)
+        else { return [] }
 
         var slots: [Slot] = []
         for week in startingWeek...6 {
-            let weekOffset = (week - startingWeek) * 7
-            for day in 1...3 {
-                let offset = weekOffset + (day - 1) * 2
-                if let date = calendar.date(byAdding: .day, value: offset, to: firstD1) {
+            for day in 1...3 where !(week == startingWeek && day < startingDay) {
+                let offset = (week - startingWeek) * 7 + (day - 1) * 2
+                if let date = calendar.date(byAdding: .day, value: offset, to: weekD1) {
                     slots.append(Slot(week: week, day: day, date: date))
                 }
             }
@@ -48,16 +46,16 @@ enum ScheduleGenerator {
     }
 
     /// Writes generated dates onto the plan's `WorkoutDay` rows. Days outside
-    /// `startingWeek…6` are cleared.
+    /// the `(startingWeek, startingDay)…(6, 3)` range are cleared.
     static func apply(to plan: WorkoutPlan,
                       startingWeek: Int,
-                      startWeekday: Int,
-                      anchor: Date,
+                      startingDay: Int = 1,
+                      startDate: Date,
                       calendar: Calendar = .current) {
         let dates = Dictionary(
             uniqueKeysWithValues: schedule(startingWeek: startingWeek,
-                                           startWeekday: startWeekday,
-                                           anchor: anchor,
+                                           startingDay: startingDay,
+                                           startDate: startDate,
                                            calendar: calendar)
                 .map { (WorkoutDay.completionKey(week: $0.week, day: $0.day), $0.date) }
         )

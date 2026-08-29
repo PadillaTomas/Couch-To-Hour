@@ -70,10 +70,10 @@ final class CalendarMonthTests: XCTestCase {
         let context = try seededContainer().mainContext
         let plan = try XCTUnwrap(context.fetch(FetchDescriptor<WorkoutPlan>()).first)
         let anchor = date(2026, 2, 2)
-        ScheduleGenerator.apply(to: plan, startingWeek: 1, startWeekday: 2, anchor: anchor, calendar: calendar)
+        ScheduleGenerator.apply(to: plan, startingWeek: 1, startDate: anchor, calendar: calendar)
 
         let firstSlot = try XCTUnwrap(
-            ScheduleGenerator.schedule(startingWeek: 1, startWeekday: 2, anchor: anchor, calendar: calendar).first
+            ScheduleGenerator.schedule(startingWeek: 1, startDate: anchor, calendar: calendar).first
         )
         let firstDay = calendar.component(.day, from: firstSlot.date)
 
@@ -90,7 +90,7 @@ final class CalendarMonthTests: XCTestCase {
         let context = try seededContainer().mainContext
         let plan = try XCTUnwrap(context.fetch(FetchDescriptor<WorkoutPlan>()).first)
         let anchor = date(2026, 2, 2)
-        ScheduleGenerator.apply(to: plan, startingWeek: 1, startWeekday: 2, anchor: anchor, calendar: calendar)
+        ScheduleGenerator.apply(to: plan, startingWeek: 1, startDate: anchor, calendar: calendar)
 
         // "today" is after the whole February block → nothing in Feb is future.
         let m = month(anchor, mode: .threeDay, plan: plan, today: date(2026, 4, 1))

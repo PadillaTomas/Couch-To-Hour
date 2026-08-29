@@ -10,6 +10,17 @@ struct SettingsView: View {
     @Query private var settings: [UserSettings]
 
     @State private var showResetDialog = false
+    @State private var showSetupAlert = false
+    @State private var showSetupFlow = false
+
+    private var mode: TrainingMode { settings.first?.mode ?? .threeDay }
+
+    private var scheduleValue: String {
+        guard mode == .threeDay, let weekday = settings.first?.startWeekday else {
+            return Copy.Settings.scheduleNotUsed
+        }
+        return Copy.Settings.scheduleStartsWeekday(Calendar.current.weekdaySymbols[weekday - 1])
+    }
 
     var body: some View {
         ScrollView {
@@ -24,10 +35,13 @@ struct SettingsView: View {
                 VStack(alignment: .leading, spacing: WKSpace.xs) {
                     WKSectionHeader(Copy.Settings.plan)
                     VStack(spacing: 0) {
-                        // TODO: opens a plan-mode switcher (→ Free) — separate ticket.
-                        WKNavRow(Copy.Settings.trainingPlanRow, value: Copy.Settings.trainingPlanValue) {}
+                        WKNavRow(Copy.Settings.trainingPlanRow, value: Copy.Settings.modeName(mode)) {
+                            showSetupAlert = true
+                        }
                         Divider().overlay(WKColor.border)
-                        WKNavRow(Copy.Settings.scheduleRow, value: Copy.Settings.scheduleValueNotSet) {}
+                        WKNavRow(Copy.Settings.scheduleRow, value: scheduleValue) {
+                            showSetupAlert = true
+                        }
                     }
                     .background(WKColor.surface)
                     .clipShape(RoundedRectangle(cornerRadius: WKRadius.card, style: .continuous))
@@ -64,6 +78,13 @@ struct SettingsView: View {
         }
         .background(WKColor.bg.ignoresSafeArea())
         .safeAreaInset(edge: .bottom) { resetFooter }
+        .alert(Copy.Settings.switchModeTitle, isPresented: $showSetupAlert) {
+            Button(Copy.Onboarding.footerContinue) { showSetupFlow = true }
+            Button(Copy.Settings.resetAlertCancel, role: .cancel) {}
+        } message: {
+            Text(Copy.Settings.switchModeBody)
+        }
+        .sheet(isPresented: $showSetupFlow) { PlanReconfigureSheet() }
         .alert(Copy.Settings.resetAlertTitle, isPresented: $showResetDialog) {
             Button(Copy.Settings.resetAlertConfirm, role: .destructive) {
                 AppReset.performFullReset(in: modelContext)

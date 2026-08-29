@@ -42,8 +42,6 @@ enum Copy {
              String(localized: "onboarding.startingWeek.blurb6")]
         }
 
-        static var startWeekdayTitle: String { String(localized: "onboarding.startWeekday.title") }
-        static var startWeekdayBody: String { String(localized: "onboarding.startWeekday.body") }
 
         static var philosophyTitle: String { String(localized: "onboarding.philosophy.title") }
         static var philosophyBody1: String { String(localized: "onboarding.philosophy.body1") }
@@ -126,6 +124,24 @@ enum Copy {
         static var statusNext: String { String(localized: "planOverview.statusNext") }
     }
 
+    enum PlanSetup {
+        static var save: String { String(localized: "planSetup.save") }
+        static var cancel: String { String(localized: "planSetup.cancel") }
+        static var continueTitle: String { String(localized: "planSetup.continueTitle") }
+        static func coord(week: Int, day: Int) -> String {
+            String(localized: "planSetup.coord", defaultValue: "Week \(week) · Day \(day)")
+        }
+        static var pickTitle: String { String(localized: "planSetup.pickTitle") }
+        static func dayLabel(_ n: Int) -> String {
+            String(localized: "planSetup.dayLabel", defaultValue: "Day \(n)")
+        }
+        static var startDateTitle: String { String(localized: "planSetup.startDateTitle") }
+        static var startDateBody: String { String(localized: "planSetup.startDateBody") }
+        static var freeDateTitle: String { String(localized: "planSetup.freeDateTitle") }
+        static var freeDateBody: String { String(localized: "planSetup.freeDateBody") }
+        static var freeDateToggle: String { String(localized: "planSetup.freeDateToggle") }
+    }
+
     enum Calendar {
         static func dayTitle(week: Int, day: Int) -> String {
             String(localized: "calendar.dayTitle", defaultValue: "Week \(week) · Day \(day)")
@@ -150,6 +166,19 @@ enum Copy {
         static var trainingPlanValue: String { String(localized: "settings.trainingPlanValue") }
         static var scheduleRow: String { String(localized: "settings.scheduleRow") }
         static var scheduleValueNotSet: String { String(localized: "settings.scheduleValueNotSet") }
+        static var scheduleNotUsed: String { String(localized: "settings.scheduleNotUsed") }
+        static func scheduleStartsWeekday(_ weekday: String) -> String {
+            String(localized: "settings.scheduleStartsWeekday", defaultValue: "Starts \(weekday)")
+        }
+
+        static func modeName(_ mode: TrainingMode) -> String {
+            switch mode {
+            case .threeDay: return String(localized: "settings.modeThreeDay")
+            case .free: return String(localized: "settings.modeFree")
+            }
+        }
+        static var switchModeTitle: String { String(localized: "settings.switchModeTitle") }
+        static var switchModeBody: String { String(localized: "settings.switchModeBody") }
         static var audio: String { String(localized: "settings.audio") }
         static var dimOtherAudio: String { String(localized: "settings.dimOtherAudio") }
         static var dimOtherAudioCaption: String { String(localized: "settings.dimOtherAudioCaption") }

@@ -15,7 +15,7 @@ final class MissedDayResolverTests: XCTestCase {
 
     /// Mon 2026-01-05 start, Week-1 schedule: D1 Mon 5th, D2 Wed 7th, D3 Fri 9th.
     private lazy var slots = ScheduleGenerator.schedule(
-        startingWeek: 1, startWeekday: 2, anchor: date(2026, 1, 5), calendar: calendar
+        startingWeek: 1, startDate: date(2026, 1, 5), calendar: calendar
     )
 
     func testOnTrackWhenTodayHasASessionAndNothingMissed() {

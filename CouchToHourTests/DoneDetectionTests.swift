@@ -24,7 +24,7 @@ final class DoneDetectionTests: XCTestCase {
         XCTAssertEqual(try context.fetchCount(FetchDescriptor<CompletionRecord>()), 1)
     }
 
-    func testMarkCompleteIsIdempotent() throws {
+    func testMarkCompleteIsIdempotentWithinADay() throws {
         let (day, context) = try firstDay()
 
         XCTAssertNotNil(DoneDetection.markComplete(day, on: .now, in: context))
@@ -32,6 +32,18 @@ final class DoneDetectionTests: XCTestCase {
         XCTAssertNil(DoneDetection.markComplete(day, on: .now, durationSeconds: 999, in: context))
 
         XCTAssertEqual(try context.fetchCount(FetchDescriptor<CompletionRecord>()), 1)
+    }
+
+    func testMarkCompleteOnAnotherDayLogsAgain() throws {
+        let (day, context) = try firstDay()
+        let today = Date(timeIntervalSinceReferenceDate: 800_000_000)
+        let nextWeek = today.addingTimeInterval(7 * 24 * 3600)
+
+        XCTAssertNotNil(DoneDetection.markComplete(day, on: today, in: context))
+        try context.save()
+        XCTAssertNotNil(DoneDetection.markComplete(day, on: nextWeek, in: context))   // re-done later
+
+        XCTAssertEqual(try context.fetchCount(FetchDescriptor<CompletionRecord>()), 2)
     }
 
     func testIsCompleteChecksByCoordinate() throws {

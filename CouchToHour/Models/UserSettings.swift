@@ -32,8 +32,12 @@ final class UserSettings {
     /// Plan week the user begins at, 1…6 — lets an experienced runner skip ahead.
     var startingWeek: Int = 1
 
-    /// Anchor date schedule generation counts forward from. Set at onboarding;
-    /// `nil` until then (and in Free mode).
+    /// Plan day within ``startingWeek`` the user begins at, 1…3. Lets the setup
+    /// flow drop you mid-week ("start from Week 3 · Day 2").
+    var startingDay: Int = 1
+
+    /// Anchor date the plan counts forward from. In 3-Day it's what the schedule
+    /// is generated from; in Free it's the optional first-run date (or `nil`).
     var startDate: Date?
 
     /// Placeholder for MVP+ local reminders. Unused in Step 1.
@@ -84,6 +88,7 @@ final class UserSettings {
         mode = .threeDay
         startWeekday = 2
         startingWeek = 1
+        startingDay = 1
         startDate = nil
         notificationsEnabled = false
         onboardingCompleted = false
