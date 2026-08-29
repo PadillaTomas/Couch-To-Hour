@@ -18,9 +18,8 @@ final class DoneDetectionTests: XCTestCase {
         XCTAssertNotNil(record)
         XCTAssertEqual(record?.workoutDayKey, "W1D1")
         XCTAssertNil(record?.feltRating)
-        // Defaulted duration is the played plan total: (R1/W1)×10 with the
-        // trailing recovery walk trimmed → 10×60 run + 9×60 walk = 1140s.
-        XCTAssertEqual(record?.durationSeconds, 1140)
+        // Defaulted duration is the played plan total: (R1/W1)×10 = 1200s.
+        XCTAssertEqual(record?.durationSeconds, 1200)
         XCTAssertEqual(try context.fetchCount(FetchDescriptor<CompletionRecord>()), 1)
     }
 

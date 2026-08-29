@@ -62,6 +62,10 @@ enum Copy {
             String(localized: "today.daySubtitle", defaultValue: "\(minutes) min · \(summary)")
         }
         static var settingUp: String { String(localized: "today.settingUp") }
+        static var notStartedTitle: String { String(localized: "today.notStartedTitle") }
+        static func notStartedBody(date: String) -> String {
+            String(localized: "today.notStartedBody", defaultValue: "Your plan starts \(date). See you then.")
+        }
         static var restDayTitle: String { String(localized: "today.restDay.title") }
         static var restDayBody: String { String(localized: "today.restDay.body") }
         static var planCompleteTitle: String { String(localized: "today.planComplete.title") }

@@ -15,6 +15,9 @@ enum TodaySession: Equatable {
     /// 3-Day: nothing due today and nothing outstanding.
     case rest
 
+    /// The runner set a start date that hasn't arrived yet — nothing to do until then.
+    case notStartedYet(Date)
+
     /// Every session is done.
     case planComplete
 
@@ -28,6 +31,12 @@ enum TodaySession: Equatable {
                         calendar: Calendar = .current) -> TodaySession {
         let isDone: (Int, Int) -> Bool = { week, day in
             DoneDetection.isComplete(week: week, day: day, among: completions)
+        }
+
+        // A future start date the runner picked, before they've done anything.
+        if completions.isEmpty, let startDate,
+           calendar.startOfDay(for: startDate) > calendar.startOfDay(for: today) {
+            return .notStartedYet(calendar.startOfDay(for: startDate))
         }
 
         switch mode {
