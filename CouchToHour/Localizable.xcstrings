@@ -1,106 +1,974 @@
 {
   "sourceLanguage" : "en",
-  "version" : "1.0",
   "strings" : {
-
-    "tabs.today" : { "extractionState" : "manual", "comment" : "Tab bar label", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Today" } } } },
-    "tabs.calendar" : { "extractionState" : "manual", "comment" : "Tab bar label", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Calendar" } } } },
-    "tabs.settings" : { "extractionState" : "manual", "comment" : "Tab bar label", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Settings" } } } },
-
-    "onboarding.mode.eyebrow" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Welcome" } } } },
-    "onboarding.mode.title" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "How do you want to run this?" } } } },
-    "onboarding.mode.body" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "You can change this later in Settings." } } } },
-    "onboarding.mode.threeDayTitle" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "3-Day Plan" } } } },
-    "onboarding.mode.threeDayBody" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Three sessions a week on set days, a rest day between each. We fill in your calendar." } } } },
-    "onboarding.mode.freeTitle" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Free Run" } } } },
-    "onboarding.mode.freeBody" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Work through the weeks at your own pace. No schedule, no calendar." } } } },
-
-    "onboarding.startingWeek.title" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Where do you want to start?" } } } },
-    "onboarding.startingWeek.body" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Week 1 assumes you're starting from scratch. Skip ahead if you already run." } } } },
-    "onboarding.startingWeek.weekLabel" : { "extractionState" : "manual", "comment" : "%lld is the week number, 1–6", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Week %lld" } } } },
-    "onboarding.startingWeek.blurb1" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "One-minute run / walk intervals." } } } },
-    "onboarding.startingWeek.blurb2" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Runs up to five minutes." } } } },
-    "onboarding.startingWeek.blurb3" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Ten-minute run blocks." } } } },
-    "onboarding.startingWeek.blurb4" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Fifteen-minute run blocks." } } } },
-    "onboarding.startingWeek.blurb5" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "A 20–30 min run, plus warm-up." } } } },
-    "onboarding.startingWeek.blurb6" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Up to a 50-minute continuous run." } } } },
-
-    "onboarding.startWeekday.title" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Which day does your week start?" } } } },
-    "onboarding.startWeekday.body" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Sessions land on this day and every second day after, resetting each week." } } } },
-
-    "onboarding.philosophy.title" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "This isn't a race." } } } },
-    "onboarding.philosophy.body1" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Run at a pace where you could still hold a conversation. If you can't, slow down — that's the whole method, not a failure." } } } },
-    "onboarding.philosophy.body2" : { "extractionState" : "manual", "comment" : "The goal is time on feet; distance/pace are shown for interest only (not yet built).", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "What matters is time on your feet — not how far or how fast. Miss a day and nothing breaks; the app just asks what you'd like to do next." } } } },
-
-    "onboarding.footer.continue" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Continue" } } } },
-    "onboarding.footer.start" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Start running" } } } },
-    "onboarding.footer.back" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Back" } } } },
-
-    "today.eyebrow" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Today" } } } },
-    "today.makeupEyebrow" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Making up a missed session" } } } },
-    "today.dayTitle" : { "extractionState" : "manual", "comment" : "%1$lld week, %2$lld day", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Week %1$lld · Day %2$lld" } } } },
-    "today.daySubtitle" : { "extractionState" : "manual", "comment" : "%1$lld minutes, %2$@ interval summary", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "%1$lld min · %2$@" } } } },
-    "today.settingUp" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Setting things up…" } } } },
-    "today.restDay.title" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Rest day" } } } },
-    "today.restDay.body" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Nothing scheduled. See you on your next session day." } } } },
-    "today.planComplete.title" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Plan complete" } } } },
-    "today.planComplete.body" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "You went from the couch to a full hour. That's the whole thing." } } } },
-
-    "today.actions.start" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Start session" } } } },
-    "today.actions.resume" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Resume session" } } } },
-    "today.actions.startOver" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Start over" } } } },
-    "today.actions.markDone" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Mark done" } } } },
-
-    "today.missed.eyebrow" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Missed session" } } } },
-    "today.missed.title" : { "extractionState" : "manual", "comment" : "%1$lld week, %2$lld day", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "You missed Week %1$lld · Day %2$lld" } } } },
-    "today.missed.body" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Do it now, or pick up with today's session. No rush either way." } } } },
-    "today.missed.doMissedTitle" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Do the missed session" } } } },
-    "today.missed.doMissedBody" : { "extractionState" : "manual", "comment" : "%1$lld week, %2$lld day", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Week %1$lld · Day %2$lld" } } } },
-    "today.missed.continueTodayTitle" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Continue with today's session" } } } },
-
-    "timer.runCaption" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Conversation pace — if you can't talk, ease off." } } } },
-    "timer.walkCaption" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Walk it out, catch your breath." } } } },
-    "timer.pause" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Pause" } } } },
-    "timer.resume" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Resume" } } } },
-    "timer.endSession" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "End session" } } } },
-    "timer.endConfirm.title" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "End the session?" } } } },
-    "timer.endConfirm.confirm" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "End" } } } },
-    "timer.endConfirm.cancel" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep going" } } } },
-    "timer.endConfirm.body" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "It won't be marked done, and your progress is discarded." } } } },
-
-    "postWorkout.eyebrow" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Nice work" } } } },
-    "postWorkout.title" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "How did that feel?" } } } },
-    "postWorkout.body" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "1 is easy, 10 is all out. It just helps you look back later." } } } },
-    "postWorkout.easyLabel" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Easy" } } } },
-    "postWorkout.hardLabel" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "All out" } } } },
-    "postWorkout.save" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Save" } } } },
-    "postWorkout.skip" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Skip" } } } },
-
-    "calendar.dayTitle" : { "extractionState" : "manual", "comment" : "%1$lld week, %2$lld day", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Week %1$lld · Day %2$lld" } } } },
-    "calendar.statTime" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Time" } } } },
-    "calendar.statFelt" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Felt" } } } },
-    "calendar.feltValue" : { "extractionState" : "manual", "comment" : "%lld is the 1–10 effort rating", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "%lld / 10" } } } },
-    "calendar.statStatus" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Status" } } } },
-    "calendar.statusDone" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Done" } } } },
-    "calendar.pillToday" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Today" } } } },
-    "calendar.pillScheduled" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Scheduled" } } } },
-    "calendar.nothingScheduled" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Nothing scheduled." } } } },
-
-    "settings.title" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Settings" } } } },
-    "settings.appearance" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Appearance" } } } },
-    "settings.plan" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Plan" } } } },
-    "settings.trainingPlanRow" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Training plan" } } } },
-    "settings.trainingPlanValue" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "6-week" } } } },
-    "settings.scheduleRow" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Schedule" } } } },
-    "settings.scheduleValueNotSet" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Not set" } } } },
-    "settings.audio" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Audio" } } } },
-    "settings.dimOtherAudio" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Dim other audio during cues" } } } },
-    "settings.dimOtherAudioCaption" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Timer cues always play alongside your music, even on silent. When on, the music dips briefly so each click is easy to hear." } } } },
-    "settings.reset.button" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Reset" } } } },
-    "settings.reset.footerCaption" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Deletes your completed sessions and schedule." } } } },
-    "settings.reset.alertTitle" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Reset the app?" } } } },
-    "settings.reset.alertBody" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Deletes your completed sessions and schedule. This can't be undone." } } } },
-    "settings.reset.alertConfirm" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Reset" } } } },
-    "settings.reset.alertCancel" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Cancel" } } } }
-  }
+    "calendar.dayTitle" : {
+      "comment" : "%1$lld week, %2$lld day",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Week %1$lld · Day %2$lld"
+          }
+        }
+      }
+    },
+    "calendar.feltValue" : {
+      "comment" : "%lld is the 1–10 effort rating",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld / 10"
+          }
+        }
+      }
+    },
+    "calendar.nothingScheduled" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing scheduled."
+          }
+        }
+      }
+    },
+    "calendar.pillScheduled" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scheduled"
+          }
+        }
+      }
+    },
+    "calendar.pillToday" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Today"
+          }
+        }
+      }
+    },
+    "calendar.statFelt" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Felt"
+          }
+        }
+      }
+    },
+    "calendar.statStatus" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Status"
+          }
+        }
+      }
+    },
+    "calendar.statTime" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Time"
+          }
+        }
+      }
+    },
+    "calendar.statusDone" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Done"
+          }
+        }
+      }
+    },
+    "onboarding.footer.back" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Back"
+          }
+        }
+      }
+    },
+    "onboarding.footer.continue" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue"
+          }
+        }
+      }
+    },
+    "onboarding.footer.start" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start running"
+          }
+        }
+      }
+    },
+    "onboarding.mode.body" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You can change this later in Settings."
+          }
+        }
+      }
+    },
+    "onboarding.mode.eyebrow" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Welcome"
+          }
+        }
+      }
+    },
+    "onboarding.mode.freeBody" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Work through the weeks at your own pace. No schedule, no calendar."
+          }
+        }
+      }
+    },
+    "onboarding.mode.freeTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Free Run"
+          }
+        }
+      }
+    },
+    "onboarding.mode.threeDayBody" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Three sessions a week on set days, a rest day between each. We fill in your calendar."
+          }
+        }
+      }
+    },
+    "onboarding.mode.threeDayTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3-Day Plan"
+          }
+        }
+      }
+    },
+    "onboarding.mode.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "How do you want to run this?"
+          }
+        }
+      }
+    },
+    "onboarding.philosophy.body1" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Run at a pace where you could still hold a conversation. If you can't, slow down — that's the whole method, not a failure."
+          }
+        }
+      }
+    },
+    "onboarding.philosophy.body2" : {
+      "comment" : "The goal is time on feet; distance/pace are shown for interest only (not yet built).",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What matters is time on your feet — not how far or how fast. Miss a day and nothing breaks; the app just asks what you'd like to do next."
+          }
+        }
+      }
+    },
+    "onboarding.philosophy.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This isn't a race."
+          }
+        }
+      }
+    },
+    "onboarding.startingWeek.blurb1" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "One-minute run / walk intervals."
+          }
+        }
+      }
+    },
+    "onboarding.startingWeek.blurb2" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Runs up to five minutes."
+          }
+        }
+      }
+    },
+    "onboarding.startingWeek.blurb3" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ten-minute run blocks."
+          }
+        }
+      }
+    },
+    "onboarding.startingWeek.blurb4" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fifteen-minute run blocks."
+          }
+        }
+      }
+    },
+    "onboarding.startingWeek.blurb5" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A 20–30 min run, plus warm-up."
+          }
+        }
+      }
+    },
+    "onboarding.startingWeek.blurb6" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Up to a 50-minute continuous run."
+          }
+        }
+      }
+    },
+    "onboarding.startingWeek.body" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Week 1 assumes you're starting from scratch. Skip ahead if you already run."
+          }
+        }
+      }
+    },
+    "onboarding.startingWeek.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Where do you want to start?"
+          }
+        }
+      }
+    },
+    "onboarding.startingWeek.weekLabel" : {
+      "comment" : "%lld is the week number, 1–6",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Week %lld"
+          }
+        }
+      }
+    },
+    "onboarding.startWeekday.body" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sessions land on this day and every second day after, resetting each week."
+          }
+        }
+      }
+    },
+    "onboarding.startWeekday.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Which day does your week start?"
+          }
+        }
+      }
+    },
+    "postWorkout.body" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 is easy, 10 is all out. It just helps you look back later."
+          }
+        }
+      }
+    },
+    "postWorkout.easyLabel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Easy"
+          }
+        }
+      }
+    },
+    "postWorkout.eyebrow" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nice work"
+          }
+        }
+      }
+    },
+    "postWorkout.hardLabel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All out"
+          }
+        }
+      }
+    },
+    "postWorkout.save" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save"
+          }
+        }
+      }
+    },
+    "postWorkout.skip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skip"
+          }
+        }
+      }
+    },
+    "postWorkout.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "How did that feel?"
+          }
+        }
+      }
+    },
+    "settings.appearance" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appearance"
+          }
+        }
+      }
+    },
+    "settings.audio" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Audio"
+          }
+        }
+      }
+    },
+    "settings.dimOtherAudio" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dim other audio during cues"
+          }
+        }
+      }
+    },
+    "settings.dimOtherAudioCaption" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Timer cues always play alongside your music, even on silent. When on, the music dips briefly so each click is easy to hear."
+          }
+        }
+      }
+    },
+    "settings.plan" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plan"
+          }
+        }
+      }
+    },
+    "settings.reset.alertBody" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deletes your completed sessions and schedule. This can't be undone."
+          }
+        }
+      }
+    },
+    "settings.reset.alertCancel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        }
+      }
+    },
+    "settings.reset.alertConfirm" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reset"
+          }
+        }
+      }
+    },
+    "settings.reset.alertTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reset the app?"
+          }
+        }
+      }
+    },
+    "settings.reset.button" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reset"
+          }
+        }
+      }
+    },
+    "settings.reset.footerCaption" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deletes your completed sessions and schedule."
+          }
+        }
+      }
+    },
+    "settings.scheduleRow" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schedule"
+          }
+        }
+      }
+    },
+    "settings.scheduleValueNotSet" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not set"
+          }
+        }
+      }
+    },
+    "settings.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings"
+          }
+        }
+      }
+    },
+    "settings.trainingPlanRow" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Training plan"
+          }
+        }
+      }
+    },
+    "settings.trainingPlanValue" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "6-week"
+          }
+        }
+      }
+    },
+    "tabs.calendar" : {
+      "comment" : "Tab bar label",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calendar"
+          }
+        }
+      }
+    },
+    "tabs.settings" : {
+      "comment" : "Tab bar label",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings"
+          }
+        }
+      }
+    },
+    "tabs.today" : {
+      "comment" : "Tab bar label",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Today"
+          }
+        }
+      }
+    },
+    "timer.endConfirm.body" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "It won't be marked done, and your progress is discarded."
+          }
+        }
+      }
+    },
+    "timer.endConfirm.cancel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep going"
+          }
+        }
+      }
+    },
+    "timer.endConfirm.confirm" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "End"
+          }
+        }
+      }
+    },
+    "timer.endConfirm.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "End the session?"
+          }
+        }
+      }
+    },
+    "timer.endSession" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "End session"
+          }
+        }
+      }
+    },
+    "timer.pause" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pause"
+          }
+        }
+      }
+    },
+    "timer.resume" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resume"
+          }
+        }
+      }
+    },
+    "timer.runCaption" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conversation pace — if you can't talk, ease off."
+          }
+        }
+      }
+    },
+    "timer.walkCaption" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Walk it out, catch your breath."
+          }
+        }
+      }
+    },
+    "today.actions.markDone" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mark as done"
+          }
+        }
+      }
+    },
+    "today.actions.resume" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resume session"
+          }
+        }
+      }
+    },
+    "today.actions.start" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start session"
+          }
+        }
+      }
+    },
+    "today.actions.startOver" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start over"
+          }
+        }
+      }
+    },
+    "today.daySubtitle" : {
+      "comment" : "%1$lld minutes, %2$@ interval summary",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld min · %2$@"
+          }
+        }
+      }
+    },
+    "today.dayTitle" : {
+      "comment" : "%1$lld week, %2$lld day",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Week %1$lld · Day %2$lld"
+          }
+        }
+      }
+    },
+    "today.eyebrow" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Today"
+          }
+        }
+      }
+    },
+    "today.makeupEyebrow" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Making up a missed session"
+          }
+        }
+      }
+    },
+    "today.missed.body" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Do it now, or pick up with today's session. No rush either way."
+          }
+        }
+      }
+    },
+    "today.missed.continueTodayTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue with today's session"
+          }
+        }
+      }
+    },
+    "today.missed.doMissedBody" : {
+      "comment" : "%1$lld week, %2$lld day",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Week %1$lld · Day %2$lld"
+          }
+        }
+      }
+    },
+    "today.missed.doMissedTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Do the missed session"
+          }
+        }
+      }
+    },
+    "today.missed.eyebrow" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Missed session"
+          }
+        }
+      }
+    },
+    "today.missed.title" : {
+      "comment" : "%1$lld week, %2$lld day",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You missed Week %1$lld · Day %2$lld"
+          }
+        }
+      }
+    },
+    "today.planComplete.body" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You went from the couch to a full hour. That's the whole thing."
+          }
+        }
+      }
+    },
+    "today.planComplete.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plan complete"
+          }
+        }
+      }
+    },
+    "today.restDay.body" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing scheduled. See you on your next session day."
+          }
+        }
+      }
+    },
+    "today.restDay.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rest day"
+          }
+        }
+      }
+    },
+    "today.settingUp" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Setting things up…"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
 }
