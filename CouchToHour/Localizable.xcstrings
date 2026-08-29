@@ -390,6 +390,45 @@
         }
       }
     },
+    "planOverview.close" : {
+      "extractionState" : "manual",
+      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Done" } } }
+    },
+    "planOverview.dayLabel" : {
+      "comment" : "%lld is the day number, 1–3",
+      "extractionState" : "manual",
+      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Day %lld" } } }
+    },
+    "planOverview.minutes" : {
+      "comment" : "%lld is a whole number of minutes",
+      "extractionState" : "manual",
+      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "%lld min" } } }
+    },
+    "planOverview.onboardingLink" : {
+      "extractionState" : "manual",
+      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "See all workouts" } } }
+    },
+    "planOverview.body" : {
+      "extractionState" : "manual",
+      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Six weeks, three sessions each. The run blocks grow week by week; the recovery walks stay a minute." } } }
+    },
+    "planOverview.statusDone" : {
+      "extractionState" : "manual",
+      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Done" } } }
+    },
+    "planOverview.statusNext" : {
+      "extractionState" : "manual",
+      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Next" } } }
+    },
+    "planOverview.title" : {
+      "extractionState" : "manual",
+      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "The plan" } } }
+    },
+    "planOverview.weekLabel" : {
+      "comment" : "%lld is the week number, 1–6",
+      "extractionState" : "manual",
+      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Week %lld" } } }
+    },
     "postWorkout.eyebrow" : {
       "extractionState" : "manual",
       "localizations" : {

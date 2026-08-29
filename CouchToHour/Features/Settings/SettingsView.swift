@@ -21,15 +21,17 @@ struct SettingsView: View {
                     WKThemePicker(selection: themeBinding)
                 }
 
-                VStack(alignment: .leading, spacing: WKSpace.md) {
+                VStack(alignment: .leading, spacing: WKSpace.xs) {
                     WKSectionHeader(Copy.Settings.plan)
                     VStack(spacing: 0) {
+                        // TODO: opens a plan-mode switcher (→ Free) — separate ticket.
                         WKNavRow(Copy.Settings.trainingPlanRow, value: Copy.Settings.trainingPlanValue) {}
                         Divider().overlay(WKColor.border)
                         WKNavRow(Copy.Settings.scheduleRow, value: Copy.Settings.scheduleValueNotSet) {}
                     }
                     .background(WKColor.surface)
                     .clipShape(RoundedRectangle(cornerRadius: WKRadius.card, style: .continuous))
+                    SeeAllWorkoutsLink(showsProgress: true)
                 }
 
                 VStack(alignment: .leading, spacing: WKSpace.md) {
