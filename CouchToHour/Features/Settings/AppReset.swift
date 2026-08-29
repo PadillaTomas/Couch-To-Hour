@@ -20,6 +20,6 @@ enum AppReset {
 
         UserSettings.current(in: context).resetToFirstRun()
 
-        try? context.save()
+        context.saveChanges("reset")
     }
 }

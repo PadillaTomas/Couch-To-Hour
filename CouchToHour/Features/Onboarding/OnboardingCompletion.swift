@@ -41,6 +41,6 @@ enum OnboardingCompletion {
         }
 
         if markOnboardingComplete { settings.onboardingCompleted = true }
-        try? context.save()
+        context.saveChanges("plan setup")
     }
 }

@@ -19,7 +19,7 @@ struct CouchToHourApp: App {
             // plan. Both are idempotent — safe on every launch.
             UserSettings.current(in: container.mainContext)
             PlanSeed.seed(into: container.mainContext)
-            try? container.mainContext.save()
+            container.mainContext.saveChanges("first-launch seed")
             modelContainer = container
         } catch {
             fatalError("Could not create ModelContainer: \(error)")

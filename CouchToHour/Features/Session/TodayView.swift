@@ -184,7 +184,7 @@ struct TodayView: View {
 
     private func markDone(_ day: WorkoutDay) {
         let record = DoneDetection.markComplete(day, on: .now, in: context)
-        try? context.save()
+        context.saveChanges("session marked done")
         missedPick = nil
         if let record { flow = .rating(record) }
     }
@@ -192,7 +192,7 @@ struct TodayView: View {
     private func finish(_ day: WorkoutDay, elapsedSeconds: Int) {
         let record = DoneDetection.markComplete(day, on: .now,
                                                 durationSeconds: elapsedSeconds, in: context)
-        try? context.save()
+        context.saveChanges("session finished")
         missedPick = nil
         flow = record.map(Flow.rating)
     }
