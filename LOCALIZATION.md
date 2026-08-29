@@ -1,79 +1,48 @@
 # Localization
 
-**Status: not localized.** The app ships English only. This doc explains what we
-have, how iOS localization normally works, and the path to real i18n if it's ever
-scoped.
+**Status: English only, but built the native way.** Adding a language is adding a
+column, no code.
 
-## What we have today
+## Where the copy lives
 
-All product copy is in **`CouchToHour/Resources/Copy.en.json`**, read through the
-typed `Copy.*` accessors in `CouchToHour/Resources/Copy.swift`.
+**`CouchToHour/Localizable.xcstrings`** — a String Catalog (Xcode 15+). It's a JSON
+file you can edit by hand, and Xcode also gives it a dedicated editor (open the
+file in Xcode: one row per string, one column per language, translation-state
+flags, comments).
 
-```
-Copy.Timer.endSession                     // "End session"
-Copy.Today.dayTitle(week: 2, day: 1)      // "Week 2 · Day 1"   ({week}/{day} filled from args)
-Copy.Onboarding.weekBlurbs                // [String] (6 entries)
-```
+Keys are explicit dotted paths (`timer.endSession`, `today.dayTitle`). Call sites
+never touch the catalog directly — they go through the typed `Copy.*` accessors
+in `CouchToHour/Resources/Copy.swift`, which are thin `String(localized:)` calls.
+The reason for the wrapper: the UIWorkouts components take plain `String`, not
+`LocalizedStringKey`, so a call site has to resolve the string itself; centralising
+that keeps the keys in one list and call sites readable.
 
-The loader already looks for **`Copy.<languageCode>.json`** first and falls back
-to `Copy.en.json`. So a second language is, mechanically, just a new file:
+**To revise copy:** edit the `value` for the `en` localization of a key in
+`Localizable.xcstrings` (or use Xcode's editor). Nothing else changes.
 
-```
-CouchToHour/Resources/
-  Copy.en.json      ← the source of truth
-  Copy.es.json      ← drop this in and Spanish devices use it. No code change.
-  Copy.fr.json
-```
+Interpolated entries (`"Week %1$lld · Day %2$lld"`) carry a matching `defaultValue`
+in `Copy.swift` — that English is a *fallback*; the catalog value wins at runtime.
 
-`languageCode` comes from `Locale.current.language.languageCode` — `"es"`, `"fr"`,
-`"pt"`, … (not region; `pt-BR` and `pt-PT` would both look for `Copy.pt.json`).
+## Adding a language
 
-### Why a JSON file instead of the native mechanism
+1. Open `Localizable.xcstrings` in Xcode → **+** language (or add the code to the
+   project's known regions and a `"<lang>"` block per key in the JSON).
+2. Fill the values — in Xcode, or export `.xcloc` (Product ▸ Export Localizations),
+   hand it to a translator, import it back.
+3. Nothing in Swift changes. The system picks the user's language at runtime and
+   falls back to English.
 
-- One obvious file, editable by anyone without opening Xcode.
-- Trivial to diff and review in a PR (which is the whole point of CTH-10).
-- No build-time string extraction to reason about.
+## Why a String Catalog and not a hand-rolled JSON
 
-### What we give up by not using the native mechanism
+Because reimplementing localization is a trap. The catalog gives us, for free:
+the Xcode editor, automatic per-language `.lproj` compilation, plural / device
+variants, `.xcloc` translator round-tripping, App Store Connect metadata tie-in,
+stale-string detection, and a runtime (`String(localized:)`) that already handles
+locale resolution, fallback, and format-arg positioning. A custom JSON loader
+gets you the loader and nothing else.
 
-- Xcode's String Catalog editor (translation status, "stale" flags, comments).
-- Automatic plural / count handling (`"%lld days"` → language-correct plural forms).
-- `xcloc` export/import — the standard hand-off format for translation vendors.
-- App Store Connect localized metadata tie-in.
-- `Text("literal")` auto-localizing itself — with our approach every string must
-  go through `Copy.*` explicitly.
+## What's not covered
 
-None of that matters at one language. All of it matters at ~5+.
-
-## How iOS localization normally works
-
-Modern iOS (Xcode 15+) uses a **String Catalog**: a single
-`Localizable.xcstrings` file (JSON under the hood) with a column per language.
-
-- `Text("Start session")` or `String(localized: "Start session")` — the literal
-  is both the *key* and the English value.
-- At build time Xcode extracts every such literal into the catalog.
-- Translators fill the other languages (in Xcode, or via exported `.xcloc`).
-- At runtime the system picks the row matching the user's preferred languages,
-  falling back to the development language (English).
-- Per-language `.lproj` folders are produced automatically inside the app bundle.
-- Plurals/device variants are first-class (no separate `.stringsdict`).
-
-The older mechanism — `Localizable.strings` (`"key" = "value";`) plus
-`Localizable.stringsdict` for plurals, one pair per `xx.lproj` — still works and
-is what String Catalogs compile down to.
-
-## Migration path (only if we commit to shipping multiple languages)
-
-The typed `Copy.*` layer is the seam that makes this cheap — **call sites never
-change**, only the backing store does.
-
-1. Add `Localizable.xcstrings` to the target.
-2. Script `Copy.en.json` → `xcstrings` entries (key = dotted path, value = string;
-   `{placeholder}` → `%@` / positional args).
-3. Repoint `Copy.string(_:_:)` from the JSON dictionary to
-   `String(localized: LocalizationValue(key))` (or `Bundle.localizedString`).
-4. Delete `Copy.*.json` and the JSON loader; keep `Copy.swift`'s accessors.
-5. Hand `.xcloc` exports to translators; import back.
-
-Until then: keep editing `Copy.en.json`.
+- `OnboardingCompletion.weekdaySymbols` (`["M","T","W",…]`) — layout-driving letters,
+  left as-is; a real localization pass would derive them from `Calendar`.
+- Number / date formatting is already locale-aware (`.formatted`, `WKTimeFormat`).

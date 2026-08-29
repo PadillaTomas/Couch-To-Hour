@@ -1,13 +1,18 @@
 import XCTest
 @testable import CouchToHour
 
-/// Guards the copy layer: every typed accessor must resolve to a real string
-/// from `Copy.en.json`. A missing key trips an assertion inside `Copy.string`,
-/// so simply touching each accessor is most of the test; the explicit checks
-/// below catch the subtler "key resolved but to something empty / wrong shape".
+/// Guards the copy layer: every typed accessor must resolve to a real string from
+/// `Localizable.xcstrings`. A missing key surfaces as the raw dotted key — e.g.
+/// `"timer.endSession"` — so `resolves(_:)` rejects that shape.
 final class CopyTests: XCTestCase {
 
-    func testEveryStringResolvesToNonEmpty() {
+    /// True unless the string looks like an unresolved key (`word.word[.word…]`
+    /// with no spaces).
+    private func resolves(_ s: String) -> Bool {
+        !s.isEmpty && !(s.range(of: #"^\w+(\.\w+)+$"#, options: .regularExpression) != nil)
+    }
+
+    func testEveryStringResolves() {
         let values: [String] = [
             Copy.Tabs.today, Copy.Tabs.calendar, Copy.Tabs.settings,
 
@@ -45,21 +50,24 @@ final class CopyTests: XCTestCase {
             Copy.Settings.resetAlertConfirm, Copy.Settings.resetAlertCancel,
         ]
         for value in values {
-            XCTAssertFalse(value.isEmpty)
-            XCTAssertFalse(value.contains("{"), "Unfilled placeholder in: \(value)")
+            XCTAssertTrue(resolves(value), "Unresolved key surfaced as copy: \(value)")
         }
+        // Spot-check a couple against the catalog's English.
+        XCTAssertEqual(Copy.Timer.endSession, "End session")
+        XCTAssertEqual(Copy.Settings.resetAlertTitle, "Reset the app?")
     }
 
-    func testPlaceholdersAreFilled() {
+    func testInterpolatedStringsResolve() {
         XCTAssertEqual(Copy.Onboarding.weekLabel(3), "Week 3")
         XCTAssertEqual(Copy.Today.dayTitle(week: 2, day: 1), "Week 2 · Day 1")
         XCTAssertEqual(Copy.Today.missedTitle(week: 4, day: 3), "You missed Week 4 · Day 3")
         XCTAssertEqual(Copy.Calendar.feltValue(7), "7 / 10")
-        XCTAssertEqual(Copy.Today.daySubtitle(minutes: 22, summary: "x"), "22 min · x")
+        XCTAssertEqual(Copy.Today.daySubtitle(minutes: 22, summary: "5 run intervals"), "22 min · 5 run intervals")
     }
 
     func testWeekBlurbsCoverAllSixWeeks() {
-        XCTAssertEqual(Copy.Onboarding.weekBlurbs.count, 6)
-        XCTAssertFalse(Copy.Onboarding.weekBlurbs.contains { $0.isEmpty })
+        let blurbs = Copy.Onboarding.weekBlurbs
+        XCTAssertEqual(blurbs.count, 6)
+        XCTAssertFalse(blurbs.contains { $0.isEmpty || $0.contains("blurb") })
     }
 }
