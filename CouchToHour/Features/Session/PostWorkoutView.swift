@@ -29,7 +29,7 @@ struct PostWorkoutView: View {
             WKFooterActions {
                 WKButton(Copy.PostWorkout.save) {
                     record.feltRating = rating
-                    try? context.save()
+                    context.saveChanges("rating")
                     onDone()
                 }
                 WKButton(Copy.PostWorkout.skip, style: .quiet) { onDone() }
