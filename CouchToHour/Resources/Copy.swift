@@ -108,6 +108,24 @@ enum Copy {
         static var skip: String { String(localized: "postWorkout.skip") }
     }
 
+    enum PlanOverview {
+        static var title: String { String(localized: "planOverview.title") }
+        static var body: String { String(localized: "planOverview.body") }
+        static var close: String { String(localized: "planOverview.close") }
+        static var onboardingLink: String { String(localized: "planOverview.onboardingLink") }
+        static func weekLabel(_ n: Int) -> String {
+            String(localized: "planOverview.weekLabel", defaultValue: "Week \(n)")
+        }
+        static func dayLabel(_ n: Int) -> String {
+            String(localized: "planOverview.dayLabel", defaultValue: "Day \(n)")
+        }
+        static func minutes(_ n: Int) -> String {
+            String(localized: "planOverview.minutes", defaultValue: "\(n) min")
+        }
+        static var statusDone: String { String(localized: "planOverview.statusDone") }
+        static var statusNext: String { String(localized: "planOverview.statusNext") }
+    }
+
     enum Calendar {
         static func dayTitle(week: Int, day: Int) -> String {
             String(localized: "calendar.dayTitle", defaultValue: "Week \(week) · Day \(day)")

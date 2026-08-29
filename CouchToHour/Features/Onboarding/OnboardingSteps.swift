@@ -5,10 +5,12 @@ struct OnboardingModeStep: View {
     @Binding var selection: TrainingMode?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: WKSpace.xl) {
+        VStack(alignment: .leading, spacing: WKSpace.sm) {
             WKScreenHeader(eyebrow: Copy.Onboarding.modeEyebrow,
                            title: Copy.Onboarding.modeTitle,
                            body: Copy.Onboarding.modeBody)
+
+            SeeAllWorkoutsLink()
 
             VStack(spacing: WKSpace.md) {
                 WKChoiceCard(title: Copy.Onboarding.threeDayTitle,
@@ -49,9 +51,11 @@ struct OnboardingStartingWeekStep: View {
     @Binding var selectionIndex: Int
 
     var body: some View {
-        VStack(alignment: .leading, spacing: WKSpace.xl) {
+        VStack(alignment: .leading, spacing: WKSpace.sm) {
             WKScreenHeader(title: Copy.Onboarding.startingWeekTitle,
                            body: Copy.Onboarding.startingWeekBody)
+
+            SeeAllWorkoutsLink()
 
             VStack(spacing: WKSpace.sm) {
                 ForEach(Array(Copy.Onboarding.weekBlurbs.enumerated()), id: \.offset) { index, blurb in
