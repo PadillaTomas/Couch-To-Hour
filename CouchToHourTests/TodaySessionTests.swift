@@ -27,30 +27,26 @@ final class TodaySessionTests: XCTestCase {
     // MARK: Free
 
     func testFreeStartsAtWeek1Day1() throws {
-        let s = TodaySession.resolve(mode: .free, plan: try plan(), startingWeek: 1,
-                                     startWeekday: 2, startDate: nil,
+        let s = TodaySession.resolve(mode: .free, plan: try plan(), startingWeek: 1, startDate: nil,
                                      completions: [], today: .now, calendar: calendar)
         XCTAssertEqual(s, .session(week: 1, day: 1, makeup: false))
     }
 
     func testFreeAdvancesPastCompletedDays() throws {
-        let s = TodaySession.resolve(mode: .free, plan: try plan(), startingWeek: 1,
-                                     startWeekday: 2, startDate: nil,
+        let s = TodaySession.resolve(mode: .free, plan: try plan(), startingWeek: 1, startDate: nil,
                                      completions: done("W1D1"), today: .now, calendar: calendar)
         XCTAssertEqual(s, .session(week: 1, day: 2, makeup: false))
     }
 
     func testFreeHonoursStartingWeek() throws {
-        let s = TodaySession.resolve(mode: .free, plan: try plan(), startingWeek: 3,
-                                     startWeekday: 2, startDate: nil,
+        let s = TodaySession.resolve(mode: .free, plan: try plan(), startingWeek: 3, startDate: nil,
                                      completions: [], today: .now, calendar: calendar)
         XCTAssertEqual(s, .session(week: 3, day: 1, makeup: false))
     }
 
     func testFreeAllDoneIsPlanComplete() throws {
         let all = (1...6).flatMap { w in (1...3).map { d in "W\(w)D\(d)" } }
-        let s = TodaySession.resolve(mode: .free, plan: try plan(), startingWeek: 1,
-                                     startWeekday: 2, startDate: nil,
+        let s = TodaySession.resolve(mode: .free, plan: try plan(), startingWeek: 1, startDate: nil,
                                      completions: done(all: all), today: .now, calendar: calendar)
         XCTAssertEqual(s, .planComplete)
     }
@@ -58,8 +54,7 @@ final class TodaySessionTests: XCTestCase {
     // MARK: 3-Day  (start Mon 2026-01-05 → W1 D1 Jan5 / D2 Jan7 / D3 Jan9)
 
     private func threeDay(today: Date, completions: [CompletionRecord]) throws -> TodaySession {
-        TodaySession.resolve(mode: .threeDay, plan: try plan(), startingWeek: 1,
-                             startWeekday: 2, startDate: date(2026, 1, 5),
+        TodaySession.resolve(mode: .threeDay, plan: try plan(), startingWeek: 1, startDate: date(2026, 1, 5),
                              completions: completions, today: today, calendar: calendar)
     }
 
@@ -89,6 +84,16 @@ final class TodaySessionTests: XCTestCase {
         let all = (1...6).flatMap { w in (1...3).map { d in "W\(w)D\(d)" } }
         XCTAssertEqual(try threeDay(today: date(2026, 3, 1), completions: done(all: all)),
                        .planComplete)
+    }
+
+    /// Restarting the plan from a session that was completed weeks ago still
+    /// shows it today — the runner explicitly parked here.
+    func testThreeDayShowsTheParkedSessionEvenIfPreviouslyDone() throws {
+        let s = TodaySession.resolve(mode: .threeDay, plan: try plan(),
+                                     startingWeek: 1, startingDay: 1,
+                                     startDate: date(2026, 4, 6), completions: done("W1D1"),
+                                     today: date(2026, 4, 6), calendar: calendar)
+        XCTAssertEqual(s, .session(week: 1, day: 1, makeup: false))
     }
 }
 

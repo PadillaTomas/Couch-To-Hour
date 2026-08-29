@@ -21,7 +21,7 @@ enum TodaySession: Equatable {
     static func resolve(mode: TrainingMode,
                         plan: WorkoutPlan,
                         startingWeek: Int,
-                        startWeekday: Int,
+                        startingDay: Int = 1,
                         startDate: Date?,
                         completions: [CompletionRecord],
                         today: Date,
@@ -32,7 +32,8 @@ enum TodaySession: Equatable {
 
         switch mode {
         case .free:
-            let next = FreeProgression.nextDay(in: plan, startingWeek: startingWeek) { day in
+            let next = FreeProgression.nextDay(in: plan, startingWeek: startingWeek,
+                                               startingDay: startingDay) { day in
                 DoneDetection.isComplete(day, among: completions)
             }
             guard let next, let week = next.week?.number else { return .planComplete }
@@ -40,9 +41,26 @@ enum TodaySession: Equatable {
 
         case .threeDay:
             let slots = ScheduleGenerator.schedule(startingWeek: startingWeek,
-                                                   startWeekday: startWeekday,
-                                                   anchor: startDate ?? today,
+                                                   startingDay: startingDay,
+                                                   startDate: startDate ?? today,
                                                    calendar: calendar)
+
+            // The session the runner parked the plan at shows on its scheduled
+            // day even if it was completed before — they explicitly chose to
+            // (re)start here. Once they log it *today*, it drops back to the
+            // normal "done for today" flow.
+            let parkedDoneToday = completions.contains {
+                guard let c = $0.workoutCoordinate else { return false }
+                return c.week == startingWeek && c.day == startingDay
+                    && calendar.isDate($0.date, inSameDayAs: today)
+            }
+            if !parkedDoneToday, slots.contains(where: {
+                $0.week == startingWeek && $0.day == startingDay
+                    && calendar.isDate($0.date, inSameDayAs: today)
+            }) {
+                return .session(week: startingWeek, day: startingDay, makeup: false)
+            }
+
             switch MissedDayResolver.resolve(today: today, slots: slots,
                                              isComplete: isDone, calendar: calendar) {
             case .onTrack(let week, let day):

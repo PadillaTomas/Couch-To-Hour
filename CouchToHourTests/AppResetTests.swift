@@ -11,8 +11,8 @@ final class AppResetTests: XCTestCase {
         let plan = try XCTUnwrap(context.fetch(FetchDescriptor<WorkoutPlan>()).first)
 
         // Get into a fully set-up state: onboarded, scheduled, one session done.
-        OnboardingCompletion.finish(.init(mode: .threeDay, startingWeek: 1, startWeekdayIndex: 0),
-                                    now: .now, in: context)
+        OnboardingCompletion.apply(PlanSetup(mode: .threeDay, startingWeek: 1),
+                                   now: .now, in: context)
         let settings = try XCTUnwrap(context.fetch(FetchDescriptor<UserSettings>()).first)
         settings.themeMode = .dark
         DoneDetection.markComplete(plan.orderedWeeks[0].orderedDays[0], on: .now, in: context)

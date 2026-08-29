@@ -346,24 +346,213 @@
         }
       }
     },
-    "onboarding.startWeekday.body" : {
+    "planOverview.body" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sessions land on this day and every second day after, resetting each week."
+            "value" : "Six weeks, three sessions each. The run blocks grow week by week; the recovery walks stay a minute."
           }
         }
       }
     },
-    "onboarding.startWeekday.title" : {
+    "planOverview.close" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Which day does your week start?"
+            "value" : "Done"
+          }
+        }
+      }
+    },
+    "planOverview.dayLabel" : {
+      "comment" : "%lld is the day number, 1–3",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Day %lld"
+          }
+        }
+      }
+    },
+    "planOverview.minutes" : {
+      "comment" : "%lld is a whole number of minutes",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld min"
+          }
+        }
+      }
+    },
+    "planOverview.onboardingLink" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "See all workouts"
+          }
+        }
+      }
+    },
+    "planOverview.statusDone" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Done"
+          }
+        }
+      }
+    },
+    "planOverview.statusNext" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next"
+          }
+        }
+      }
+    },
+    "planOverview.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The plan"
+          }
+        }
+      }
+    },
+    "planOverview.weekLabel" : {
+      "comment" : "%lld is the week number, 1–6",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Week %lld"
+          }
+        }
+      }
+    },
+    "planSetup.cancel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        }
+      }
+    },
+    "planSetup.continueTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue where you left off"
+          }
+        }
+      }
+    },
+    "planSetup.coord" : {
+      "comment" : "%1$lld week, %2$lld day",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Week %1$lld · Day %2$lld"
+          }
+        }
+      }
+    },
+    "planSetup.dayLabel" : {
+      "comment" : "%lld is the day number, 1–3",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Day %lld"
+          }
+        }
+      }
+    },
+    "planSetup.freeDateBody" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Optional. Sets a point on your calendar to aim for — skip it if you'd rather just start."
+          }
+        }
+      }
+    },
+    "planSetup.startDateTitle" : {
+      "extractionState" : "manual",
+      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "When do you want to start?" } } }
+    },
+    "planSetup.startDateBody" : {
+      "extractionState" : "manual",
+      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Your first session is on this day; the rest follow every second day. Today is fine." } } }
+    },
+    "planSetup.freeDateTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When's your first run?"
+          }
+        }
+      }
+    },
+    "planSetup.freeDateToggle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Set a start date"
+          }
+        }
+      }
+    },
+    "planSetup.pickTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start from a specific workout"
+          }
+        }
+      }
+    },
+    "planSetup.save" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save"
           }
         }
       }
@@ -389,45 +578,6 @@
           }
         }
       }
-    },
-    "planOverview.close" : {
-      "extractionState" : "manual",
-      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Done" } } }
-    },
-    "planOverview.dayLabel" : {
-      "comment" : "%lld is the day number, 1–3",
-      "extractionState" : "manual",
-      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Day %lld" } } }
-    },
-    "planOverview.minutes" : {
-      "comment" : "%lld is a whole number of minutes",
-      "extractionState" : "manual",
-      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "%lld min" } } }
-    },
-    "planOverview.onboardingLink" : {
-      "extractionState" : "manual",
-      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "See all workouts" } } }
-    },
-    "planOverview.body" : {
-      "extractionState" : "manual",
-      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Six weeks, three sessions each. The run blocks grow week by week; the recovery walks stay a minute." } } }
-    },
-    "planOverview.statusDone" : {
-      "extractionState" : "manual",
-      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Done" } } }
-    },
-    "planOverview.statusNext" : {
-      "extractionState" : "manual",
-      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Next" } } }
-    },
-    "planOverview.title" : {
-      "extractionState" : "manual",
-      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "The plan" } } }
-    },
-    "planOverview.weekLabel" : {
-      "comment" : "%lld is the week number, 1–6",
-      "extractionState" : "manual",
-      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Week %lld" } } }
     },
     "postWorkout.eyebrow" : {
       "extractionState" : "manual",
@@ -528,6 +678,28 @@
         }
       }
     },
+    "settings.modeFree" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Free Run"
+          }
+        }
+      }
+    },
+    "settings.modeThreeDay" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3-Day Plan"
+          }
+        }
+      }
+    },
     "settings.plan" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -605,6 +777,17 @@
         }
       }
     },
+    "settings.scheduleNotUsed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not used"
+          }
+        }
+      }
+    },
     "settings.scheduleRow" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -616,6 +799,18 @@
         }
       }
     },
+    "settings.scheduleStartsWeekday" : {
+      "comment" : "%@ is a weekday name, e.g. Monday",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Starts %@"
+          }
+        }
+      }
+    },
     "settings.scheduleValueNotSet" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -623,6 +818,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Not set"
+          }
+        }
+      }
+    },
+    "settings.switchModeBody" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your completed sessions are kept. You'll pick your mode, starting point and schedule again."
+          }
+        }
+      }
+    },
+    "settings.switchModeTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change your plan setup?"
           }
         }
       }

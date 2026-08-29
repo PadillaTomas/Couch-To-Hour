@@ -15,10 +15,8 @@ enum DemoData {
 
         let calendar = Calendar.current
         let anchor = calendar.date(byAdding: .day, value: -18, to: calendar.startOfDay(for: now))!
-        let startWeekday = calendar.component(.weekday, from: anchor)
 
-        ScheduleGenerator.apply(to: plan, startingWeek: 1, startWeekday: startWeekday,
-                                anchor: anchor, calendar: calendar)
+        ScheduleGenerator.apply(to: plan, startingWeek: 1, startDate: anchor, calendar: calendar)
 
         // Complete every session whose scheduled date is already in the past.
         let ratings = [5, 6, 5, 7, 6, 8, 6, 7, 6, 7]
@@ -37,8 +35,9 @@ enum DemoData {
 
         let settings = UserSettings.current(in: context)
         settings.mode = .threeDay
-        settings.startWeekday = startWeekday
+        settings.startWeekday = calendar.component(.weekday, from: anchor)
         settings.startingWeek = 1
+        settings.startingDay = 1
         settings.startDate = anchor
         settings.onboardingCompleted = true
 

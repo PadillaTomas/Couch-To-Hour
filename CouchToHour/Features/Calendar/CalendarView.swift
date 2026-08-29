@@ -15,9 +15,21 @@ struct CalendarView: View {
     private var calendar: Calendar { .current }
     private var mode: TrainingMode { settingsRows.first?.mode ?? .threeDay }
 
+    /// Free mode: the runner's next session paired with their first-run date, so
+    /// the calendar has one thing ahead to aim at. `nil` in 3-Day / when unset.
+    private var freeFirstSession: (date: Date, week: Int, day: Int)? {
+        guard mode == .free,
+              let s = settingsRows.first, let startDate = s.startDate, let plan = plans.first,
+              let next = PlanPosition.next(in: plan, startingWeek: s.startingWeek,
+                                           startingDay: s.startingDay, completions: completions)
+        else { return nil }
+        return (startDate, next.week, next.day)
+    }
+
     private var month: CalendarMonth {
         CalendarMonth.resolve(monthContaining: monthAnchor, mode: mode, plan: plans.first,
-                              completions: completions, today: .now, calendar: calendar)
+                              completions: completions, today: .now,
+                              freeFirstSession: freeFirstSession?.date, calendar: calendar)
     }
 
     /// Day-of-month to ring in the grid — nil when the selection is in another month.
@@ -28,7 +40,8 @@ struct CalendarView: View {
 
     private var info: CalendarDayInfo {
         CalendarDayInfo.resolve(date: selectedDate, mode: mode, plan: plans.first,
-                                completions: completions, today: .now, calendar: calendar)
+                                completions: completions, today: .now,
+                                freeFirstSession: freeFirstSession, calendar: calendar)
     }
 
     var body: some View {
@@ -61,31 +74,39 @@ struct CalendarView: View {
                 .foregroundStyle(WKColor.textTertiary)
 
             switch info {
-            case let .done(week, day, groups, seconds, rating):
-                Text(Copy.Calendar.dayTitle(week: week, day: day))
-                    .wkFont(.titleM).foregroundStyle(WKColor.textPrimary)
-                HStack(spacing: WKSpace.xxl) {
-                    stat(Copy.Calendar.statTime, WKTimeFormat.clock(seconds))
-                    if let rating { stat(Copy.Calendar.statFelt, Copy.Calendar.feltValue(rating)) }
-                    stat(Copy.Calendar.statStatus, Copy.Calendar.statusDone)
+            case .sessions(let items):
+                ForEach(Array(items.enumerated()), id: \.offset) { _, item in
+                    sessionBlock(item)
                 }
-                intervals(groups, done: true)
-
-            case let .scheduled(week, day, groups, isToday):
-                HStack(alignment: .firstTextBaseline, spacing: WKSpace.md) {
-                    Text(Copy.Calendar.dayTitle(week: week, day: day))
-                        .wkFont(.titleM).foregroundStyle(WKColor.textPrimary)
-                    WKPill(isToday ? Copy.Calendar.pillToday : Copy.Calendar.pillScheduled,
-                           tone: isToday ? .run : .neutral)
-                }
-                intervals(groups, done: false)
-
             case .rest:
                 Text(Copy.Calendar.nothingScheduled)
                     .wkFont(.body).foregroundStyle(WKColor.textSecondary)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    @ViewBuilder
+    private func sessionBlock(_ item: CalendarDayInfo.Item) -> some View {
+        VStack(alignment: .leading, spacing: WKSpace.sm) {
+            HStack(alignment: .firstTextBaseline, spacing: WKSpace.md) {
+                Text(Copy.Calendar.dayTitle(week: item.week, day: item.day))
+                    .wkFont(.titleM).foregroundStyle(WKColor.textPrimary)
+                if case .scheduled(let isToday) = item.status {
+                    WKPill(isToday ? Copy.Calendar.pillToday : Copy.Calendar.pillScheduled,
+                           tone: isToday ? .run : .neutral)
+                }
+            }
+            if case .done(let seconds, let rating) = item.status {
+                HStack(spacing: WKSpace.xxl) {
+                    stat(Copy.Calendar.statTime, WKTimeFormat.clock(seconds))
+                    if let rating { stat(Copy.Calendar.statFelt, Copy.Calendar.feltValue(rating)) }
+                    stat(Copy.Calendar.statStatus, Copy.Calendar.statusDone)
+                }
+            }
+            intervals(item.groups, done: item.isDone)
+        }
+        .padding(.top, WKSpace.xs)
     }
 
     private func intervals(_ groups: [SessionPlan.Group], done: Bool) -> some View {

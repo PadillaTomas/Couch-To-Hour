@@ -6,27 +6,29 @@ import SwiftData
 /// already done.
 enum DoneDetection {
 
-    /// Records a completion for `day` unless it already has one. Idempotent, so
-    /// the manual button and the timer's auto-complete can't double-log.
+    /// Records a completion for `day`, unless one was already logged for it on
+    /// the same calendar day — so the manual button and the timer's auto-complete
+    /// can't double-log a single session, but re-doing a workout on another day
+    /// (e.g. after restarting the plan) logs a fresh record.
     ///
     /// - Parameters:
     ///   - durationSeconds: time the session actually took; defaults to the
     ///     plan's scheduled running + walking total.
     ///   - feltRating: usually `nil` here — the post-workout screen fills it in
     ///     afterwards via ``CompletionRecord/feltRating``.
-    /// - Returns: the new record, or `nil` if the day was already complete.
+    /// - Returns: the new record, or `nil` if `day` was already logged today.
     @discardableResult
     static func markComplete(_ day: WorkoutDay,
                              on date: Date,
                              durationSeconds: Int? = nil,
                              feltRating: Int? = nil,
+                             calendar: Calendar = .current,
                              in context: ModelContext) -> CompletionRecord? {
         let key = day.completionKey
-        var descriptor = FetchDescriptor<CompletionRecord>(
+        let existing = (try? context.fetch(FetchDescriptor<CompletionRecord>(
             predicate: #Predicate { $0.workoutDayKey == key }
-        )
-        descriptor.fetchLimit = 1
-        if (try? context.fetch(descriptor))?.isEmpty == false { return nil }
+        ))) ?? []
+        if existing.contains(where: { calendar.isDate($0.date, inSameDayAs: date) }) { return nil }
 
         let record = CompletionRecord(
             date: date,

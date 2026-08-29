@@ -40,7 +40,7 @@ struct TodayView: View {
             mode: settings.mode,
             plan: plan,
             startingWeek: settings.startingWeek,
-            startWeekday: settings.startWeekday,
+            startingDay: settings.startingDay,
             startDate: settings.startDate,
             completions: completions,
             today: .now
