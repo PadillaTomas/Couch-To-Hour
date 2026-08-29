@@ -30,7 +30,7 @@
 
     "onboarding.philosophy.title" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "This isn't a race." } } } },
     "onboarding.philosophy.body1" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Run at a pace where you could still hold a conversation. If you can't, slow down — that's the whole method, not a failure." } } } },
-    "onboarding.philosophy.body2" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "The plan measures time spent running, never distance or speed. Miss a day and nothing breaks; the app just asks what you want to do next." } } } },
+    "onboarding.philosophy.body2" : { "extractionState" : "manual", "comment" : "The goal is time on feet; distance/pace are shown for interest only (not yet built).", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "What matters is time on your feet — not how far or how fast. Miss a day and nothing breaks; the app just asks what you'd like to do next." } } } },
 
     "onboarding.footer.continue" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Continue" } } } },
     "onboarding.footer.start" : { "extractionState" : "manual", "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Start running" } } } },
