@@ -39,6 +39,11 @@ final class UserSettings {
     /// Placeholder for MVP+ local reminders. Unused in Step 1.
     var notificationsEnabled: Bool = false
 
+    /// Briefly dip other apps' audio (music, podcasts) under each timer cue so
+    /// the click is audible over it. Off = cues layer on top at full volume.
+    /// A device preference, not workout data — kept across a reset.
+    var dimOtherAudioDuringCues: Bool = true
+
     /// First-run gate. `false` until onboarding finishes; once `true`, relaunch
     /// goes straight to the app.
     var onboardingCompleted: Bool = false
@@ -49,6 +54,7 @@ final class UserSettings {
          startingWeek: Int = 1,
          startDate: Date? = nil,
          notificationsEnabled: Bool = false,
+         dimOtherAudioDuringCues: Bool = true,
          onboardingCompleted: Bool = false) {
         self.themeModeRaw = themeMode.rawValue
         self.modeRaw = mode.rawValue
@@ -56,6 +62,7 @@ final class UserSettings {
         self.startingWeek = startingWeek
         self.startDate = startDate
         self.notificationsEnabled = notificationsEnabled
+        self.dimOtherAudioDuringCues = dimOtherAudioDuringCues
         self.onboardingCompleted = onboardingCompleted
     }
 

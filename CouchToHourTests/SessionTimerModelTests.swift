@@ -82,4 +82,114 @@ final class SessionTimerModelTests: XCTestCase {
         tick(model, 2)
         XCTAssertEqual(model.segmentFraction, 0.4, accuracy: 0.001)
     }
+
+    // MARK: Wall-clock sync (returning from the background)
+
+    func testWallClockSyncCatchesUpAcrossPhaseBoundaries() {
+        var t = Date(timeIntervalSinceReferenceDate: 0)
+        let spy = SpyTones()
+        let model = SessionTimerModel(plan: plan([(.run, 5), (.walk, 3), (.run, 5)]),
+                                      tones: spy, now: { t })
+
+        t = t.addingTimeInterval(6)   // 6 real seconds pass, app backgrounded
+        model.syncToWallClock()
+
+        XCTAssertEqual(model.segmentIndex, 1)          // into the walk
+        XCTAssertEqual(model.secondsLeftInSegment, 2)  // 6 - 5 = 1s into a 3s walk
+        XCTAssertEqual(spy.changes, 1)                 // the crossed boundary fired
+        XCTAssertEqual(spy.ticks, 0)                   // countdown ticks not replayed
+    }
+
+    func testWallClockSyncFinishesWhenAwayPastTheEnd() {
+        var t = Date(timeIntervalSinceReferenceDate: 0)
+        let model = SessionTimerModel(plan: plan([(.run, 5), (.walk, 3)]), now: { t })
+
+        t = t.addingTimeInterval(120)
+        model.syncToWallClock()
+
+        XCTAssertEqual(model.state, .finished)
+        XCTAssertEqual(model.elapsedSeconds, 8)
+    }
+
+    func testWallClockSyncIsANoOpWhilePaused() {
+        var t = Date(timeIntervalSinceReferenceDate: 0)
+        let model = SessionTimerModel(plan: plan([(.run, 10)]), now: { t })
+        model.togglePause()
+
+        t = t.addingTimeInterval(5)
+        model.syncToWallClock()
+
+        XCTAssertEqual(model.state, .paused)
+        XCTAssertEqual(model.secondsLeftInSegment, 10)
+    }
+
+    func testResumeFromPauseStaysAlignedToTheWallClock() {
+        var t = Date(timeIntervalSinceReferenceDate: 0)
+        let model = SessionTimerModel(plan: plan([(.run, 10)]), now: { t })
+
+        tick(model, 3)                    // 7 left
+        model.togglePause()
+        t = t.addingTimeInterval(30)      // 30s paused — must not count
+        model.togglePause()               // resume
+        t = t.addingTimeInterval(4)       // 4 real seconds running
+        model.syncToWallClock()
+
+        XCTAssertEqual(model.secondsLeftInSegment, 3)   // 7 - 4
+    }
+
+    // MARK: Resume (persisted snapshot)
+
+    private let key = SessionKey(week: 3, day: 2, makeup: false)
+
+    func testSnapshotRoundTripsThroughTheModel() throws {
+        let model = SessionTimerModel(plan: plan([(.run, 5), (.walk, 3), (.run, 5)]))
+        tick(model, 7)   // 5s run done, 2s into the walk
+
+        let snap = try XCTUnwrap(model.makeSnapshot(for: key))
+        XCTAssertEqual(snap.key, key)
+        XCTAssertEqual(snap.segmentIndex, 1)
+        XCTAssertEqual(snap.secondsLeftInSegment, 1)
+
+        let resumed = SessionTimerModel.resuming(snap)
+        XCTAssertEqual(resumed.segmentIndex, 1)
+        XCTAssertEqual(resumed.currentSegment.phase, .walk)
+        XCTAssertEqual(resumed.secondsLeftInSegment, 1)
+        XCTAssertEqual(resumed.state, .running)
+    }
+
+    func testFinishedSessionHasNoSnapshot() {
+        let model = SessionTimerModel(plan: plan([(.run, 2)]))
+        tick(model, 2)
+        XCTAssertEqual(model.state, .finished)
+        XCTAssertNil(model.makeSnapshot(for: key))
+    }
+
+    func testResumeDoesNotCountTimeAwayUntilNextBackgrounding() throws {
+        var t = Date(timeIntervalSinceReferenceDate: 0)
+        let model = SessionTimerModel(plan: plan([(.run, 10), (.walk, 3)]), now: { t })
+        tick(model, 4)                                   // 6 left in the run
+        let snap = try XCTUnwrap(model.makeSnapshot(for: key))
+
+        t = t.addingTimeInterval(9999)                   // app was killed, long gone
+        let resumed = SessionTimerModel.resuming(snap, now: { t })
+        XCTAssertEqual(resumed.secondsLeftInSegment, 6)  // picks up exactly where left off
+        XCTAssertEqual(resumed.state, .running)
+
+        t = t.addingTimeInterval(2)
+        resumed.syncToWallClock()
+        XCTAssertEqual(resumed.secondsLeftInSegment, 4)  // normal catch-up resumes from here
+    }
+
+    func testResumingClampsAMalformedSnapshot() {
+        let snap = InProgressSession(
+            key: key,
+            phases: [.init(phaseRaw: "run", seconds: 5)],
+            segmentIndex: 99,
+            secondsLeftInSegment: 500,
+            savedAt: Date(timeIntervalSinceReferenceDate: 0)
+        )
+        let model = SessionTimerModel.resuming(snap)
+        XCTAssertEqual(model.segmentIndex, 0)
+        XCTAssertEqual(model.secondsLeftInSegment, 5)
+    }
 }

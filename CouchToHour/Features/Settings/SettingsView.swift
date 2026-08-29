@@ -32,6 +32,19 @@ struct SettingsView: View {
                     .clipShape(RoundedRectangle(cornerRadius: WKRadius.card, style: .continuous))
                 }
 
+                VStack(alignment: .leading, spacing: WKSpace.md) {
+                    WKSectionHeader("Audio")
+                    VStack(spacing: 0) {
+                        WKToggleRow("Dim other audio during cues", isOn: dimAudioBinding)
+                    }
+                    .background(WKColor.surface)
+                    .clipShape(RoundedRectangle(cornerRadius: WKRadius.card, style: .continuous))
+                    Text("Timer cues always play alongside your music, even on silent. When on, the music dips briefly so each click is easy to hear.")
+                        .wkFont(.caption)
+                        .foregroundStyle(WKColor.textTertiary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
                 #if DEBUG
                 VStack(alignment: .leading, spacing: WKSpace.md) {
                     WKSectionHeader("Debug")
@@ -84,6 +97,13 @@ struct SettingsView: View {
         Binding(
             get: { settings.first?.themeMode ?? .system },
             set: { UserSettings.current(in: modelContext).themeMode = $0 }
+        )
+    }
+
+    private var dimAudioBinding: Binding<Bool> {
+        Binding(
+            get: { settings.first?.dimOtherAudioDuringCues ?? true },
+            set: { UserSettings.current(in: modelContext).dimOtherAudioDuringCues = $0 }
         )
     }
 }
