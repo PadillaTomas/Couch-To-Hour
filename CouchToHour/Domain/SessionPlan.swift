@@ -2,14 +2,10 @@ import Foundation
 import UIWorkouts
 
 /// A `WorkoutDay` flattened into the literal ordered phase sequence a timer
-/// plays. This is where the two plan-data edge cases are resolved:
+/// plays — every run and every recovery walk exactly as the plan writes it
+/// (`1 min run / 1 min walk ×10` = 20 min, ending on the cool-down walk).
 ///
-/// 1. **A session never ends on a walk.** Every plan chunk is `run` then a
-///    1-minute recovery walk, so all but W6D3 would otherwise end mid-recovery.
-///    The trailing walk of the final chunk is dropped — the session is complete
-///    when the last *run* ends. (Interior walks are always followed by the next
-///    chunk's run, so only the very last phase can ever be a walk.)
-/// 2. **A chunk with no walk** (W6D3) contributes a single continuous run.
+/// Edge case: a chunk with no walk (W6D3) contributes a single continuous run.
 struct SessionPlan: Equatable {
     struct Phase: Equatable {
         var phase: WKPhase
@@ -101,9 +97,6 @@ extension SessionPlan {
                 if let walk { result.append(Phase(phase: .walk, seconds: walk.durationSeconds)) }
             }
         }
-
-        // Edge case 1: trim a trailing recovery walk.
-        if result.last?.phase == .walk { result.removeLast() }
 
         self.phases = result
     }

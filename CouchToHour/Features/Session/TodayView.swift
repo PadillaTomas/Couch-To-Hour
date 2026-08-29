@@ -83,6 +83,10 @@ struct TodayView: View {
             case .rest:
                 infoScreen(eyebrow: Copy.Today.eyebrow, title: Copy.Today.restDayTitle,
                            detail: Copy.Today.restDayBody)
+            case .notStartedYet(let date):
+                infoScreen(eyebrow: Copy.Today.eyebrow, title: Copy.Today.notStartedTitle,
+                           detail: Copy.Today.notStartedBody(
+                            date: date.formatted(.dateTime.weekday(.wide).month().day())))
             case .planComplete:
                 infoScreen(eyebrow: Copy.Today.eyebrow, title: Copy.Today.planCompleteTitle,
                            detail: Copy.Today.planCompleteBody)

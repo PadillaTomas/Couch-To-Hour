@@ -8,26 +8,22 @@ final class SessionPlanTests: XCTestCase {
         specs.map { Interval(order: $0.0, group: $0.1, phase: $0.2, durationSeconds: $0.3, repeatCount: $0.4) }
     }
 
-    /// "(R1 / W1) ×3" expands to R W R W R — the trailing walk is trimmed.
-    func testRepeatedChunkExpandsAndTrimsTrailingWalk() {
+    /// "(R1 / W1) ×3" expands to the literal R W R W R W — every recovery walk kept.
+    func testRepeatedChunkExpandsInFull() {
         let session = SessionPlan(intervals: intervals([
             (0, 0, .run, 60, 3),
             (1, 0, .walk, 60, 3),
         ]))
         XCTAssertEqual(session.phases, [
-            .init(phase: .run, seconds: 60),
-            .init(phase: .walk, seconds: 60),
-            .init(phase: .run, seconds: 60),
-            .init(phase: .walk, seconds: 60),
-            .init(phase: .run, seconds: 60),
+            .init(phase: .run, seconds: 60), .init(phase: .walk, seconds: 60),
+            .init(phase: .run, seconds: 60), .init(phase: .walk, seconds: 60),
+            .init(phase: .run, seconds: 60), .init(phase: .walk, seconds: 60),
         ])
         XCTAssertEqual(session.runningSeconds, 180)
-        XCTAssertEqual(session.totalSeconds, 300)
+        XCTAssertEqual(session.totalSeconds, 360)
     }
 
-    /// Edge case W6D1: "R5 / W1, R40 / W1" ends on a walk → session ends after
-    /// the last run.
-    func testMultiGroupSessionEndsOnLastRun() {
+    func testMultiGroupSessionKeepsEveryWalk() {
         let session = SessionPlan(intervals: intervals([
             (0, 0, .run, 300, 1),
             (1, 0, .walk, 60, 1),
@@ -38,6 +34,7 @@ final class SessionPlanTests: XCTestCase {
             .init(phase: .run, seconds: 300),
             .init(phase: .walk, seconds: 60),
             .init(phase: .run, seconds: 2400),
+            .init(phase: .walk, seconds: 60),
         ])
     }
 

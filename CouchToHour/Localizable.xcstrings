@@ -1214,6 +1214,15 @@
         }
       }
     },
+    "today.notStartedTitle" : {
+      "extractionState" : "manual",
+      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Not yet" } } }
+    },
+    "today.notStartedBody" : {
+      "comment" : "%@ is a formatted date, e.g. Monday, January 5",
+      "extractionState" : "manual",
+      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Your plan starts %@. See you then." } } }
+    },
     "today.settingUp" : {
       "extractionState" : "manual",
       "localizations" : {

@@ -88,6 +88,21 @@ final class TodaySessionTests: XCTestCase {
 
     /// Restarting the plan from a session that was completed weeks ago still
     /// shows it today — the runner explicitly parked here.
+    func testFutureStartDateShowsNotStartedYet() throws {
+        let start = date(2026, 6, 1)
+        for mode in [TrainingMode.free, .threeDay] {
+            let s = TodaySession.resolve(mode: mode, plan: try plan(), startingWeek: 1,
+                                         startDate: start, completions: [],
+                                         today: date(2026, 5, 20), calendar: calendar)
+            XCTAssertEqual(s, .notStartedYet(start), "\(mode)")
+        }
+        // Start date reached → normal flow.
+        let started = TodaySession.resolve(mode: .free, plan: try plan(), startingWeek: 1,
+                                           startDate: start, completions: [],
+                                           today: date(2026, 6, 2), calendar: calendar)
+        XCTAssertEqual(started, .session(week: 1, day: 1, makeup: false))
+    }
+
     func testThreeDayShowsTheParkedSessionEvenIfPreviouslyDone() throws {
         let s = TodaySession.resolve(mode: .threeDay, plan: try plan(),
                                      startingWeek: 1, startingDay: 1,
