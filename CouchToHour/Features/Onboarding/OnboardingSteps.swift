@@ -1,35 +1,21 @@
 import SwiftUI
 import UIWorkouts
 
-/// One-line summary of each plan week, shown in the starting-week picker.
-/// Kept short enough to sit on a single line so every card is the same height
-/// (a compact `WKChoiceCard` with a one-line body is a fixed size).
-enum OnboardingCopy {
-    static let weekBlurbs = [
-        "One-minute run / walk intervals.",
-        "Runs up to five minutes.",
-        "Ten-minute run blocks.",
-        "Fifteen-minute run blocks.",
-        "A 20–30 min run, plus warm-up.",
-        "Up to a 50-minute continuous run.",
-    ]
-}
-
 struct OnboardingModeStep: View {
     @Binding var selection: TrainingMode?
 
     var body: some View {
         VStack(alignment: .leading, spacing: WKSpace.xl) {
-            WKScreenHeader(eyebrow: "Welcome",
-                           title: "How do you want to run this?",
-                           body: "You can change this later in Settings.")
+            WKScreenHeader(eyebrow: Copy.Onboarding.modeEyebrow,
+                           title: Copy.Onboarding.modeTitle,
+                           body: Copy.Onboarding.modeBody)
 
             VStack(spacing: WKSpace.md) {
-                WKChoiceCard(title: "3-Day Plan",
-                             body: "Three sessions a week on set days, a rest day between each. We fill in your calendar.",
+                WKChoiceCard(title: Copy.Onboarding.threeDayTitle,
+                             body: Copy.Onboarding.threeDayBody,
                              isSelected: selection == .threeDay) { selection = .threeDay }
-                WKChoiceCard(title: "Free Run",
-                             body: "Work through the weeks at your own pace. No schedule, no calendar.",
+                WKChoiceCard(title: Copy.Onboarding.freeTitle,
+                             body: Copy.Onboarding.freeBody,
                              isSelected: selection == .free) { selection = .free }
             }
         }
@@ -39,17 +25,17 @@ struct OnboardingModeStep: View {
 struct OnboardingPhilosophyStep: View {
     var body: some View {
         VStack(spacing: WKSpace.lg) {
-            Text("This isn't a race.")
+            Text(Copy.Onboarding.philosophyTitle)
                 .wkFont(.titleL)
                 .foregroundStyle(WKColor.textPrimary)
                 .accessibilityAddTraits(.isHeader)
 
-            Text("Run at a pace where you could still hold a conversation. If you can't, slow down — that's the whole method, not a failure.")
+            Text(Copy.Onboarding.philosophyBody1)
                 .wkFont(.body)
                 .foregroundStyle(WKColor.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
 
-            Text("The plan measures time spent running, never distance or speed. Miss a day and nothing breaks; the app just asks what you want to do next.")
+            Text(Copy.Onboarding.philosophyBody2)
                 .wkFont(.body)
                 .foregroundStyle(WKColor.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -64,12 +50,12 @@ struct OnboardingStartingWeekStep: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: WKSpace.xl) {
-            WKScreenHeader(title: "Where do you want to start?",
-                           body: "Week 1 assumes you're starting from scratch. Skip ahead if you already run.")
+            WKScreenHeader(title: Copy.Onboarding.startingWeekTitle,
+                           body: Copy.Onboarding.startingWeekBody)
 
             VStack(spacing: WKSpace.sm) {
-                ForEach(Array(OnboardingCopy.weekBlurbs.enumerated()), id: \.offset) { index, blurb in
-                    WKChoiceCard(title: "Week \(index + 1)",
+                ForEach(Array(Copy.Onboarding.weekBlurbs.enumerated()), id: \.offset) { index, blurb in
+                    WKChoiceCard(title: Copy.Onboarding.weekLabel(index + 1),
                                  body: blurb,
                                  isSelected: index == selectionIndex,
                                  compact: true) { selectionIndex = index }
@@ -84,8 +70,8 @@ struct OnboardingStartWeekdayStep: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: WKSpace.xl) {
-            WKScreenHeader(title: "Which day does your week start?",
-                           body: "Sessions land on this day and every second day after, resetting each week.")
+            WKScreenHeader(title: Copy.Onboarding.startWeekdayTitle,
+                           body: Copy.Onboarding.startWeekdayBody)
 
             WKWeekdayPicker(symbols: OnboardingCompletion.weekdaySymbols,
                             selection: $selectionIndex)

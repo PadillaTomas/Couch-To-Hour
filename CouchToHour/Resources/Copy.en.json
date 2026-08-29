@@ -1,0 +1,135 @@
+{
+  "_note": "Every user-facing string in Couch to Hour. Edit values freely; keep keys and {placeholders} intact. DEBUG-only developer UI is not in here. See Copy.swift.",
+
+  "tabs": {
+    "today": "Today",
+    "calendar": "Calendar",
+    "settings": "Settings"
+  },
+
+  "onboarding": {
+    "mode": {
+      "eyebrow": "Welcome",
+      "title": "How do you want to run this?",
+      "body": "You can change this later in Settings.",
+      "threeDayTitle": "3-Day Plan",
+      "threeDayBody": "Three sessions a week on set days, a rest day between each. We fill in your calendar.",
+      "freeTitle": "Free Run",
+      "freeBody": "Work through the weeks at your own pace. No schedule, no calendar."
+    },
+    "startingWeek": {
+      "title": "Where do you want to start?",
+      "body": "Week 1 assumes you're starting from scratch. Skip ahead if you already run.",
+      "weekLabel": "Week {n}",
+      "blurbs": [
+        "One-minute run / walk intervals.",
+        "Runs up to five minutes.",
+        "Ten-minute run blocks.",
+        "Fifteen-minute run blocks.",
+        "A 20–30 min run, plus warm-up.",
+        "Up to a 50-minute continuous run."
+      ]
+    },
+    "startWeekday": {
+      "title": "Which day does your week start?",
+      "body": "Sessions land on this day and every second day after, resetting each week."
+    },
+    "philosophy": {
+      "title": "This isn't a race.",
+      "body1": "Run at a pace where you could still hold a conversation. If you can't, slow down — that's the whole method, not a failure.",
+      "body2": "The plan measures time spent running, never distance or speed. Miss a day and nothing breaks; the app just asks what you want to do next."
+    },
+    "footer": {
+      "continue": "Continue",
+      "start": "Start running",
+      "back": "Back"
+    }
+  },
+
+  "today": {
+    "eyebrow": "Today",
+    "makeupEyebrow": "Making up a missed session",
+    "dayTitle": "Week {week} · Day {day}",
+    "daySubtitle": "{minutes} min · {summary}",
+    "settingUp": "Setting things up…",
+    "restDay": {
+      "title": "Rest day",
+      "body": "Nothing scheduled. See you on your next session day."
+    },
+    "planComplete": {
+      "title": "Plan complete",
+      "body": "You went from the couch to a full hour. That's the whole thing."
+    },
+    "actions": {
+      "start": "Start session",
+      "resume": "Resume session",
+      "startOver": "Start over",
+      "markDone": "Mark done"
+    },
+    "missed": {
+      "eyebrow": "Missed session",
+      "title": "You missed Week {week} · Day {day}",
+      "body": "Do it now, or pick up with today's session. No rush either way.",
+      "doMissedTitle": "Do the missed session",
+      "doMissedBody": "Week {week} · Day {day}",
+      "continueTodayTitle": "Continue with today's session"
+    }
+  },
+
+  "timer": {
+    "runCaption": "Conversation pace — if you can't talk, ease off.",
+    "walkCaption": "Walk it out, catch your breath.",
+    "pause": "Pause",
+    "resume": "Resume",
+    "endSession": "End session",
+    "endConfirm": {
+      "title": "End the session?",
+      "confirm": "End",
+      "cancel": "Keep going",
+      "body": "It won't be marked done, and your progress is discarded."
+    }
+  },
+
+  "postWorkout": {
+    "eyebrow": "Nice work",
+    "title": "How did that feel?",
+    "body": "1 is easy, 10 is all out. It just helps you look back later.",
+    "easyLabel": "Easy",
+    "hardLabel": "All out",
+    "save": "Save",
+    "skip": "Skip"
+  },
+
+  "calendar": {
+    "dayTitle": "Week {week} · Day {day}",
+    "statTime": "Time",
+    "statFelt": "Felt",
+    "feltValue": "{rating} / 10",
+    "statStatus": "Status",
+    "statusDone": "Done",
+    "pillToday": "Today",
+    "pillScheduled": "Scheduled",
+    "nothingScheduled": "Nothing scheduled."
+  },
+
+  "settings": {
+    "title": "Settings",
+    "appearance": "Appearance",
+    "plan": "Plan",
+    "trainingPlanRow": "Training plan",
+    "trainingPlanValue": "6-week",
+    "scheduleRow": "Schedule",
+    "scheduleValueNotSet": "Not set",
+    "audio": "Audio",
+    "dimOtherAudio": "Dim other audio during cues",
+    "dimOtherAudioCaption": "Timer cues always play alongside your music, even on silent. When on, the music dips briefly so each click is easy to hear.",
+    "reset": {
+      "button": "Reset",
+      "footerCaption": "Deletes your completed sessions and schedule.",
+      "alertTitle": "Reset the app?",
+      "alertBody": "Deletes your completed sessions and schedule. This can't be undone.",
+      "alertConfirm": "Reset",
+      "alertCancel": "Cancel"
+    }
+  }
+}
