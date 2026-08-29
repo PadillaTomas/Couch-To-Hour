@@ -15,10 +15,11 @@ struct PostWorkoutView: View {
         ZStack {
             WKColor.bg.ignoresSafeArea()
             VStack(alignment: .leading, spacing: WKSpace.xl) {
-                WKScreenHeader(eyebrow: "Nice work",
-                               title: "How did that feel?",
-                               body: "1 is easy, 10 is all out. It just helps you look back later.")
-                WKScaleSelector(range: 1...10, selection: $rating, endLabels: ("Easy", "All out"))
+                WKScreenHeader(eyebrow: Copy.PostWorkout.eyebrow,
+                               title: Copy.PostWorkout.title,
+                               body: Copy.PostWorkout.body)
+                WKScaleSelector(range: 1...10, selection: $rating,
+                                endLabels: (Copy.PostWorkout.easyLabel, Copy.PostWorkout.hardLabel))
                 Spacer()
             }
             .padding(WKSpace.lg)
@@ -26,12 +27,12 @@ struct PostWorkoutView: View {
         }
         .safeAreaInset(edge: .bottom) {
             WKFooterActions {
-                WKButton("Save") {
+                WKButton(Copy.PostWorkout.save) {
                     record.feltRating = rating
                     try? context.save()
                     onDone()
                 }
-                WKButton("Skip", style: .quiet) { onDone() }
+                WKButton(Copy.PostWorkout.skip, style: .quiet) { onDone() }
             }
         }
     }

@@ -62,25 +62,26 @@ struct CalendarView: View {
 
             switch info {
             case let .done(week, day, groups, seconds, rating):
-                Text("Week \(week) · Day \(day)")
+                Text(Copy.Calendar.dayTitle(week: week, day: day))
                     .wkFont(.titleM).foregroundStyle(WKColor.textPrimary)
                 HStack(spacing: WKSpace.xxl) {
-                    stat("Time", WKTimeFormat.clock(seconds))
-                    if let rating { stat("Felt", "\(rating) / 10") }
-                    stat("Status", "Done")
+                    stat(Copy.Calendar.statTime, WKTimeFormat.clock(seconds))
+                    if let rating { stat(Copy.Calendar.statFelt, Copy.Calendar.feltValue(rating)) }
+                    stat(Copy.Calendar.statStatus, Copy.Calendar.statusDone)
                 }
                 intervals(groups, done: true)
 
             case let .scheduled(week, day, groups, isToday):
                 HStack(alignment: .firstTextBaseline, spacing: WKSpace.md) {
-                    Text("Week \(week) · Day \(day)")
+                    Text(Copy.Calendar.dayTitle(week: week, day: day))
                         .wkFont(.titleM).foregroundStyle(WKColor.textPrimary)
-                    WKPill(isToday ? "Today" : "Scheduled", tone: isToday ? .run : .neutral)
+                    WKPill(isToday ? Copy.Calendar.pillToday : Copy.Calendar.pillScheduled,
+                           tone: isToday ? .run : .neutral)
                 }
                 intervals(groups, done: false)
 
             case .rest:
-                Text("Nothing scheduled.")
+                Text(Copy.Calendar.nothingScheduled)
                     .wkFont(.body).foregroundStyle(WKColor.textSecondary)
             }
         }

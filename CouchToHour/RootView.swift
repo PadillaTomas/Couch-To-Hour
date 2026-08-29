@@ -27,11 +27,11 @@ struct MainTabView: View {
     var body: some View {
         TabView {
             TodayView()
-                .tabItem { Label("Today", systemImage: "figure.run") }
+                .tabItem { Label(Copy.Tabs.today, systemImage: "figure.run") }
             CalendarView()
-                .tabItem { Label("Calendar", systemImage: "calendar") }
+                .tabItem { Label(Copy.Tabs.calendar, systemImage: "calendar") }
             SettingsView()
-                .tabItem { Label("Settings", systemImage: "gearshape") }
+                .tabItem { Label(Copy.Tabs.settings, systemImage: "gearshape") }
         }
     }
 }

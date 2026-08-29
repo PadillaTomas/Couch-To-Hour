@@ -67,10 +67,10 @@ struct OnboardingFlow: View {
 
     private var footer: some View {
         WKFooterActions {
-            WKButton(isLastStep ? "Start running" : "Continue") { advance() }
+            WKButton(isLastStep ? Copy.Onboarding.footerStart : Copy.Onboarding.footerContinue) { advance() }
                 .disabled(step == .mode && mode == nil)
             if stepIndex > 0 {
-                WKButton("Back", style: .quiet) {
+                WKButton(Copy.Onboarding.footerBack, style: .quiet) {
                     withAnimation(.snappy) { stepIndex -= 1 }
                 }
             }

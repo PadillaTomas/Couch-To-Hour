@@ -14,32 +14,32 @@ struct SettingsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: WKSpace.xl) {
-                WKScreenHeader(title: "Settings")
+                WKScreenHeader(title: Copy.Settings.title)
 
                 VStack(alignment: .leading, spacing: WKSpace.md) {
-                    WKSectionHeader("Appearance")
+                    WKSectionHeader(Copy.Settings.appearance)
                     WKThemePicker(selection: themeBinding)
                 }
 
                 VStack(alignment: .leading, spacing: WKSpace.md) {
-                    WKSectionHeader("Plan")
+                    WKSectionHeader(Copy.Settings.plan)
                     VStack(spacing: 0) {
-                        WKNavRow("Training plan", value: "6-week") {}
+                        WKNavRow(Copy.Settings.trainingPlanRow, value: Copy.Settings.trainingPlanValue) {}
                         Divider().overlay(WKColor.border)
-                        WKNavRow("Schedule", value: "Not set") {}
+                        WKNavRow(Copy.Settings.scheduleRow, value: Copy.Settings.scheduleValueNotSet) {}
                     }
                     .background(WKColor.surface)
                     .clipShape(RoundedRectangle(cornerRadius: WKRadius.card, style: .continuous))
                 }
 
                 VStack(alignment: .leading, spacing: WKSpace.md) {
-                    WKSectionHeader("Audio")
+                    WKSectionHeader(Copy.Settings.audio)
                     VStack(spacing: 0) {
-                        WKToggleRow("Dim other audio during cues", isOn: dimAudioBinding)
+                        WKToggleRow(Copy.Settings.dimOtherAudio, isOn: dimAudioBinding)
                     }
                     .background(WKColor.surface)
                     .clipShape(RoundedRectangle(cornerRadius: WKRadius.card, style: .continuous))
-                    Text("Timer cues always play alongside your music, even on silent. When on, the music dips briefly so each click is easy to hear.")
+                    Text(Copy.Settings.dimOtherAudioCaption)
                         .wkFont(.caption)
                         .foregroundStyle(WKColor.textTertiary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -62,13 +62,13 @@ struct SettingsView: View {
         }
         .background(WKColor.bg.ignoresSafeArea())
         .safeAreaInset(edge: .bottom) { resetFooter }
-        .alert("Reset the app?", isPresented: $showResetDialog) {
-            Button("Reset", role: .destructive) {
+        .alert(Copy.Settings.resetAlertTitle, isPresented: $showResetDialog) {
+            Button(Copy.Settings.resetAlertConfirm, role: .destructive) {
                 AppReset.performFullReset(in: modelContext)
             }
-            Button("Cancel", role: .cancel) {}
+            Button(Copy.Settings.resetAlertCancel, role: .cancel) {}
         } message: {
-            Text("Deletes your completed sessions and schedule. This can't be undone.")
+            Text(Copy.Settings.resetAlertBody)
         }
     }
 
@@ -76,11 +76,11 @@ struct SettingsView: View {
     private var resetFooter: some View {
         VStack(spacing: WKSpace.xs) {
             // Plain text button — no capsule frame, so it hugs its caption.
-            Button("Reset") { showResetDialog = true }
+            Button(Copy.Settings.resetButton) { showResetDialog = true }
                 .wkFont(.body)
                 .foregroundStyle(WKColor.danger)
 
-            Text("Deletes your completed sessions and schedule.")
+            Text(Copy.Settings.resetFooterCaption)
                 .wkFont(.caption)
                 .foregroundStyle(WKColor.textTertiary)
                 .multilineTextAlignment(.center)

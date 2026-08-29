@@ -81,14 +81,14 @@ struct TodayView: View {
                 case nil:     missedPrompt(missedWeek: mw, missedDay: md)
                 }
             case .rest:
-                infoScreen(eyebrow: "Today", title: "Rest day",
-                           detail: "Nothing scheduled. See you on your next session day.")
+                infoScreen(eyebrow: Copy.Today.eyebrow, title: Copy.Today.restDayTitle,
+                           detail: Copy.Today.restDayBody)
             case .planComplete:
-                infoScreen(eyebrow: "Today", title: "Plan complete",
-                           detail: "You went from the couch to a full hour. That's the whole thing.")
+                infoScreen(eyebrow: Copy.Today.eyebrow, title: Copy.Today.planCompleteTitle,
+                           detail: Copy.Today.planCompleteBody)
             }
         } else {
-            infoScreen(eyebrow: "Today", title: "Setting things up…", detail: nil)
+            infoScreen(eyebrow: Copy.Today.eyebrow, title: Copy.Today.settingUp, detail: nil)
         }
     }
 
@@ -101,9 +101,10 @@ struct TodayView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: WKSpace.xl) {
                     WKScreenHeader(
-                        eyebrow: makeup ? "Making up a missed session" : "Today",
-                        title: "Week \(week) · Day \(day)",
-                        body: "\(sessionPlan.totalSeconds / 60) min · \(SessionPlan.summary(of: workoutDay))"
+                        eyebrow: makeup ? Copy.Today.makeupEyebrow : Copy.Today.eyebrow,
+                        title: Copy.Today.dayTitle(week: week, day: day),
+                        body: Copy.Today.daySubtitle(minutes: sessionPlan.totalSeconds / 60,
+                                                     summary: SessionPlan.summary(of: workoutDay))
                     )
                     WKSegmentedTrack(segments: previewTrack(sessionPlan))
                     VStack(spacing: WKSpace.sm) {
@@ -121,20 +122,20 @@ struct TodayView: View {
                 let canResume = SessionResumeStore.load()?.key == key
                 WKFooterActions {
                     if canResume {
-                        WKButton("Resume session") {
+                        WKButton(Copy.Today.actionResume) {
                             flow = .timer(workoutDay, key: key, fast: false, resume: true)
                         }
-                        WKButton("Start over", style: .quiet) {
+                        WKButton(Copy.Today.actionStartOver, style: .quiet) {
                             SessionResumeStore.clear()
                             flow = .timer(workoutDay, key: key, fast: false, resume: false)
                         }
                     } else {
-                        WKButton("Start session") {
+                        WKButton(Copy.Today.actionStart) {
                             SessionResumeStore.clear()
                             flow = .timer(workoutDay, key: key, fast: false, resume: false)
                         }
                     }
-                    WKButton("Mark done", style: .quiet) { markDone(workoutDay) }
+                    WKButton(Copy.Today.actionMarkDone, style: .quiet) { markDone(workoutDay) }
                     #if DEBUG
                     WKButton("Test: fast timer", style: .quiet) {
                         flow = .timer(workoutDay, key: key, fast: true, resume: false)
@@ -143,7 +144,8 @@ struct TodayView: View {
                 }
             }
         } else {
-            infoScreen(eyebrow: "Today", title: "Week \(week) · Day \(day)", detail: nil)
+            infoScreen(eyebrow: Copy.Today.eyebrow,
+                       title: Copy.Today.dayTitle(week: week, day: day), detail: nil)
         }
     }
 
@@ -152,15 +154,15 @@ struct TodayView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: WKSpace.xl) {
                 WKScreenHeader(
-                    eyebrow: "Missed session",
-                    title: "You missed Week \(missedWeek) · Day \(missedDay)",
-                    body: "Do it now, or pick up with today's session. No rush either way."
+                    eyebrow: Copy.Today.missedEyebrow,
+                    title: Copy.Today.missedTitle(week: missedWeek, day: missedDay),
+                    body: Copy.Today.missedBody
                 )
                 VStack(spacing: WKSpace.md) {
-                    WKChoiceCard(title: "Do the missed session",
-                                 body: "Week \(missedWeek) · Day \(missedDay)",
+                    WKChoiceCard(title: Copy.Today.missedDoTitle,
+                                 body: Copy.Today.missedDoBody(week: missedWeek, day: missedDay),
                                  isSelected: false) { missedPick = .missed }
-                    WKChoiceCard(title: "Continue with today's session",
+                    WKChoiceCard(title: Copy.Today.missedContinueTodayTitle,
                                  isSelected: false) { missedPick = .today }
                 }
             }

@@ -60,8 +60,8 @@ struct TimerView: View {
                 fraction: model.segmentFraction,
                 phase: model.currentSegment.phase,
                 caption: model.currentSegment.phase == .run
-                    ? "Conversation pace — if you can't talk, ease off."
-                    : "Walk it out, catch your breath.",
+                    ? Copy.Timer.runCaption
+                    : Copy.Timer.walkCaption,
                 seconds: model.secondsLeftInSegment,
                 state: dialState
             )
@@ -71,11 +71,11 @@ struct TimerView: View {
         .safeAreaInset(edge: .bottom) {
             if model.state != .finished {
                 WKFooterActions {
-                    WKButton(model.state == .paused ? "Resume" : "Pause",
+                    WKButton(model.state == .paused ? Copy.Timer.resume : Copy.Timer.pause,
                              style: .softPhase(model.currentSegment.phase)) {
                         model.togglePause()
                     }
-                    WKButton("End session", style: .quiet) { showExitConfirm = true }
+                    WKButton(Copy.Timer.endSession, style: .quiet) { showExitConfirm = true }
                 }
             }
         }
@@ -104,15 +104,15 @@ struct TimerView: View {
             if phase == .active { model.syncToWallClock() }
             persistSnapshot()
         }
-        .alert("End the session?", isPresented: $showExitConfirm) {
-            Button("End", role: .destructive) {
+        .alert(Copy.Timer.endConfirmTitle, isPresented: $showExitConfirm) {
+            Button(Copy.Timer.endConfirmConfirm, role: .destructive) {
                 model.stop()
                 SessionResumeStore.clear()
                 onExit()
             }
-            Button("Keep going", role: .cancel) {}
+            Button(Copy.Timer.endConfirmCancel, role: .cancel) {}
         } message: {
-            Text("It won't be marked done, and your progress is discarded.")
+            Text(Copy.Timer.endConfirmBody)
         }
     }
 
