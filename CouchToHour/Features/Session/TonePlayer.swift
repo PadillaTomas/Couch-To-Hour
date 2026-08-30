@@ -37,6 +37,10 @@ final class SessionCuePlayer: TonePlaying {
     /// each cue. When `false`, cues layer on top at full volume.
     private let dimsOtherAudio: Bool
 
+    /// `AVAudioSession.setActive(_:)` can block briefly (route negotiation) and
+    /// Apple warns against calling it on the main thread — do it here.
+    private let audioQueue = DispatchQueue(label: "com.padillatomas.couchtohour.audio-session")
+
     init(dimsOtherAudio: Bool = true) {
         self.dimsOtherAudio = dimsOtherAudio
     }
@@ -59,6 +63,10 @@ final class SessionCuePlayer: TonePlaying {
 
     private let hapticsSupported = CHHapticEngine.capabilitiesForHardware().supportsHaptics
     private var engine: CHHapticEngine?
+    /// Retained so it can be stopped *before* the engine — otherwise Core Haptics
+    /// logs `_Haptic_Check … error -4810` when the engine is torn down while a
+    /// pattern is still playing (e.g. session ends mid-cue).
+    private var activePlayer: CHHapticPatternPlayer?
 
     private func startHaptics() {
         guard hapticsSupported else { return }
@@ -74,7 +82,9 @@ final class SessionCuePlayer: TonePlaying {
     }
 
     private func stopHaptics() {
-        engine?.stop()
+        try? activePlayer?.stop(atTime: CHHapticTimeImmediate)
+        activePlayer = nil
+        engine?.stop(completionHandler: nil)
         engine = nil
     }
 
@@ -98,7 +108,9 @@ final class SessionCuePlayer: TonePlaying {
         do {
             try engine.start()   // no-op if running; recovers after a background trip
             let pattern = try CHHapticPattern(events: events, parameters: [])
-            try engine.makePlayer(with: pattern).start(atTime: CHHapticTimeImmediate)
+            let player = try engine.makePlayer(with: pattern)
+            activePlayer = player
+            try player.start(atTime: CHHapticTimeImmediate)
         } catch {
             AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
         }
@@ -123,11 +135,15 @@ final class SessionCuePlayer: TonePlaying {
     func sessionDidBegin() {
         // `.playback` ignores the mute switch; `.mixWithOthers` keeps the
         // runner's music going alongside our cues, optionally ducked under them.
-        var options: AVAudioSession.CategoryOptions = [.mixWithOthers]
-        if dimsOtherAudio { options.insert(.duckOthers) }
-        let session = AVAudioSession.sharedInstance()
-        try? session.setCategory(.playback, mode: .default, options: options)
-        try? session.setActive(true)
+        // Off the main thread — `setActive` can stall the UI (Apple's warning).
+        let dims = dimsOtherAudio
+        audioQueue.async {
+            var options: AVAudioSession.CategoryOptions = [.mixWithOthers]
+            if dims { options.insert(.duckOthers) }
+            let session = AVAudioSession.sharedInstance()
+            try? session.setCategory(.playback, mode: .default, options: options)
+            try? session.setActive(true)
+        }
 
         [tickPlayer, changePlayer, donePlayer].forEach { $0?.prepareToPlay() }   // synth now
         startHaptics()
@@ -135,8 +151,10 @@ final class SessionCuePlayer: TonePlaying {
 
     func sessionDidEnd() {
         stopHaptics()
-        try? AVAudioSession.sharedInstance()
-            .setActive(false, options: .notifyOthersOnDeactivation)
+        audioQueue.async {
+            try? AVAudioSession.sharedInstance()
+                .setActive(false, options: .notifyOthersOnDeactivation)
+        }
     }
 }
 
