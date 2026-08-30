@@ -6,12 +6,13 @@ import SwiftData
 /// nothing user-owned about it.
 enum AppReset {
 
-    /// Deletes completion history and resets `UserSettings` to its first-run
-    /// state (keeping the theme). The schedule is derived from those settings,
-    /// so there's nothing else to clear. The root view's `onboardingCompleted`
-    /// query then swaps the app for onboarding.
+    /// Deletes completion history (and any attached photo files) and resets
+    /// `UserSettings` to its first-run state (keeping the theme). The schedule is
+    /// derived from those settings, so there's nothing else to clear. The root
+    /// view's `onboardingCompleted` query then swaps the app for onboarding.
     static func performFullReset(in context: ModelContext) {
         for record in (try? context.fetch(FetchDescriptor<CompletionRecord>())) ?? [] {
+            if let photo = record.photoPath { PhotoStore.delete(photo) }
             context.delete(record)
         }
 

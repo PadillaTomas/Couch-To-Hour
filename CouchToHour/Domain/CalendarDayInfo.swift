@@ -5,7 +5,7 @@ import Foundation
 enum CalendarDayInfo: Equatable {
     struct Item: Equatable {
         enum Status: Equatable {
-            case done(durationSeconds: Int, feltRating: Int?)
+            case done(durationSeconds: Int, feltRating: Int?, photoFile: String?)
             case scheduled(isToday: Bool)
         }
         var week: Int
@@ -37,7 +37,8 @@ enum CalendarDayInfo: Equatable {
             items.append(Item(week: coord.week, day: coord.day,
                               groups: SessionPlan.groups(of: workoutDay),
                               status: .done(durationSeconds: record.durationSeconds,
-                                            feltRating: record.feltRating)))
+                                            feltRating: record.feltRating,
+                                            photoFile: record.photoPath)))
         }
 
         // A session scheduled for this day, unless a completion already covers it.

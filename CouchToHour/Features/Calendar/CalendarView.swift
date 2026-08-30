@@ -1,5 +1,6 @@
 import SwiftData
 import SwiftUI
+import UIKit
 import UIWorkouts
 
 /// The Calendar tab: a month grid with dots on completed / scheduled days.
@@ -11,6 +12,9 @@ struct CalendarView: View {
 
     @State private var monthAnchor = Date()
     @State private var selectedDate = Calendar.current.startOfDay(for: .now)
+    @State private var viewerImage: ViewerImage?
+
+    private struct ViewerImage: Identifiable { let id = UUID(); let image: UIImage }
 
     private var calendar: Calendar { .current }
 
@@ -55,6 +59,9 @@ struct CalendarView: View {
         }
         .background(WKColor.bg.ignoresSafeArea())
         .animation(.snappy, value: selectedDate)
+        .fullScreenCover(item: $viewerImage) { item in
+            PhotoViewer(image: item.image) { viewerImage = nil }
+        }
     }
 
     @ViewBuilder private var detailPanel: some View {
@@ -87,11 +94,14 @@ struct CalendarView: View {
                            tone: isToday ? .run : .neutral)
                 }
             }
-            if case .done(let seconds, let rating) = item.status {
+            if case .done(let seconds, let rating, let photoFile) = item.status {
                 HStack(spacing: WKSpace.xxl) {
                     stat(Copy.Calendar.statTime, WKTimeFormat.clock(seconds))
                     if let rating { stat(Copy.Calendar.statFelt, Copy.Calendar.feltValue(rating)) }
                     stat(Copy.Calendar.statStatus, Copy.Calendar.statusDone)
+                }
+                if let photoFile {
+                    SessionPhoto(fileName: photoFile) { viewerImage = ViewerImage(image: $0) }
                 }
             }
             intervals(item.groups, done: item.isDone)
@@ -129,6 +139,62 @@ struct CalendarView: View {
         if let picked = calendar.date(byAdding: .day, value: wkDay.day - 1, to: monthStart) {
             selectedDate = picked
         }
+    }
+}
+
+/// A stored session photo, decoded off the main thread. Renders nothing until
+/// the image is ready (and nothing if the file is missing).
+private struct SessionPhoto: View {
+    let fileName: String
+    var onTap: (UIImage) -> Void
+
+    @State private var image: UIImage?
+
+    var body: some View {
+        Group {
+            if let image {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(height: 150)
+                    .frame(maxWidth: .infinity)
+                    .clipShape(RoundedRectangle(cornerRadius: WKRadius.card, style: .continuous))
+                    .contentShape(Rectangle())
+                    .onTapGesture { onTap(image) }
+                    .accessibilityLabel(Copy.PostWorkout.photoAlt)
+                    .accessibilityAddTraits(.isButton)
+            }
+        }
+        .task(id: fileName) {
+            image = await Task.detached { PhotoStore.load(fileName) }.value
+        }
+    }
+}
+
+/// Full-screen viewer for a session photo — tap or the close button to dismiss.
+private struct PhotoViewer: View {
+    let image: UIImage
+    var onClose: () -> Void
+
+    var body: some View {
+        ZStack(alignment: .topTrailing) {
+            Color.black.ignoresSafeArea()
+            Image(uiImage: image)
+                .resizable()
+                .scaledToFit()
+                .accessibilityLabel(Copy.PostWorkout.photoAlt)
+            Button(action: onClose) {
+                Image(systemName: "xmark")
+                    .font(.headline)
+                    .foregroundStyle(.white)
+                    .padding(WKSpace.sm)
+                    .background(.black.opacity(0.4), in: Circle())
+            }
+            .padding(WKSpace.lg)
+            .accessibilityLabel(Copy.PhotoViewer.close)
+        }
+        .contentShape(Rectangle())
+        .onTapGesture(perform: onClose)
     }
 }
 

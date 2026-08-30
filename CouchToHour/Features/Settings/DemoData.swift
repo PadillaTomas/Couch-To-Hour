@@ -45,6 +45,7 @@ enum DemoData {
 
     static func clear(from context: ModelContext) {
         for record in (try? context.fetch(FetchDescriptor<CompletionRecord>())) ?? [] {
+            if let photo = record.photoPath { PhotoStore.delete(photo) }
             context.delete(record)
         }
         try? context.save()
