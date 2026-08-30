@@ -21,6 +21,18 @@ enum TodaySession: Equatable {
     /// Every session is done.
     case planComplete
 
+    /// The `(week, day)` this resolves to for screens that need a plain
+    /// coordinate (Calendar's upcoming marker). `nil` when there's nothing to
+    /// point at (rest / not-started / plan complete). For an Option-C choice it
+    /// points at today's session.
+    var coordinate: (week: Int, day: Int)? {
+        switch self {
+        case .session(let w, let d, _): return (w, d)
+        case .missedChoice(_, _, let tw, let td): return (tw, td)
+        case .rest, .notStartedYet, .planComplete: return nil
+        }
+    }
+
     static func resolve(mode: TrainingMode,
                         plan: WorkoutPlan,
                         startingWeek: Int,
@@ -41,12 +53,21 @@ enum TodaySession: Equatable {
 
         switch mode {
         case .free:
-            let next = FreeProgression.nextDay(in: plan, startingWeek: startingWeek,
-                                               startingDay: startingDay) { day in
-                DoneDetection.isComplete(day, among: completions)
+            // The runner (re)set their starting point on `startDate`. On that day
+            // Today shows exactly `(startingWeek, startingDay)` — even if it was
+            // completed on an earlier pass — until they log it again today. Older
+            // completion records are never altered; the next day normal
+            // progression resumes on its own.
+            if let startDate, calendar.isDate(startDate, inSameDayAs: today),
+               !parkedLoggedToday(startingWeek, startingDay, completions, today, calendar) {
+                return .session(week: startingWeek, day: startingDay, makeup: false)
             }
-            guard let next, let week = next.week?.number else { return .planComplete }
-            return .session(week: week, day: next.number, makeup: false)
+
+            guard let next = PlanProgress.nextIncomplete(in: plan, startingWeek: startingWeek,
+                                                        startingDay: startingDay,
+                                                        completions: completions)
+            else { return .planComplete }
+            return .session(week: next.week, day: next.day, makeup: false)
 
         case .threeDay:
             let slots = ScheduleGenerator.schedule(startingWeek: startingWeek,
@@ -58,12 +79,8 @@ enum TodaySession: Equatable {
             // day even if it was completed before — they explicitly chose to
             // (re)start here. Once they log it *today*, it drops back to the
             // normal "done for today" flow.
-            let parkedDoneToday = completions.contains {
-                guard let c = $0.workoutCoordinate else { return false }
-                return c.week == startingWeek && c.day == startingDay
-                    && calendar.isDate($0.date, inSameDayAs: today)
-            }
-            if !parkedDoneToday, slots.contains(where: {
+            if !parkedLoggedToday(startingWeek, startingDay, completions, today, calendar),
+               slots.contains(where: {
                 $0.week == startingWeek && $0.day == startingDay
                     && calendar.isDate($0.date, inSameDayAs: today)
             }) {
@@ -84,6 +101,18 @@ enum TodaySession: Equatable {
                 }
                 return .session(week: mw, day: md, makeup: true)
             }
+        }
+    }
+
+    /// Whether the parked starting session `(week, day)` has already been logged
+    /// *today* — once it has, Today falls back to the normal flow instead of
+    /// re-offering it.
+    private static func parkedLoggedToday(_ week: Int, _ day: Int,
+                                         _ completions: [CompletionRecord],
+                                         _ today: Date, _ calendar: Calendar) -> Bool {
+        completions.contains {
+            guard let c = $0.workoutCoordinate else { return false }
+            return c.week == week && c.day == day && calendar.isDate($0.date, inSameDayAs: today)
         }
     }
 }

@@ -21,7 +21,7 @@ final class OnboardingCompletionTests: XCTestCase {
         try XCTUnwrap(context.fetch(FetchDescriptor<UserSettings>()).first)
     }
 
-    func testApplyThreeDayPersistsSetupAndPopulatesSchedule() throws {
+    func testApplyThreeDayPersistsSetup() throws {
         let context = try context()
         let start = date(2026, 1, 1)   // Thursday
 
@@ -35,9 +35,19 @@ final class OnboardingCompletionTests: XCTestCase {
         XCTAssertEqual(settings.startWeekday, 5)          // derived from the start date (Thu)
         XCTAssertTrue(settings.onboardingCompleted)
 
-        XCTAssertEqual(try plan(in: context).day(week: 1, day: 1)?.scheduledDate, start)
-        XCTAssertTrue(try plan(in: context).orderedWeeks.flatMap(\.orderedDays)
-            .allSatisfy { $0.scheduledDate != nil })
+        // The schedule is derived from those inputs, not persisted.
+        let slots = ScheduleGenerator.schedule(startingWeek: 1, startDate: start, calendar: calendar)
+        XCTAssertEqual(slots.count, 18)
+        XCTAssertEqual(slots.first?.date, start)
+    }
+
+    func testApplyStampsThePlanEpoch() throws {
+        let context = try context()
+        let now = date(2026, 5, 4)
+        OnboardingCompletion.apply(PlanSetup(mode: .threeDay, startingWeek: 1),
+                                   now: now, markOnboardingComplete: false,
+                                   in: context, calendar: calendar)
+        XCTAssertEqual(try settings(in: context).planEpoch, now)
     }
 
     func testApplyThreeDayDefaultsStartDateToNow() throws {
@@ -48,19 +58,29 @@ final class OnboardingCompletionTests: XCTestCase {
         XCTAssertEqual(try settings(in: context).startDate, now)
     }
 
-    func testApplyThreeDayWithLaterStartingWeekLeavesEarlierWeeksUnscheduled() throws {
+    func testApplyThreeDayWithLaterStartingWeekPersistsThatStartingWeek() throws {
         let context = try context()
         OnboardingCompletion.apply(PlanSetup(mode: .threeDay, startingWeek: 3, startDate: date(2026, 1, 1)),
                                    in: context, calendar: calendar)
 
-        for week in try plan(in: context).orderedWeeks {
-            let expectDates = week.number >= 3
-            XCTAssertTrue(week.orderedDays.allSatisfy { ($0.scheduledDate != nil) == expectDates },
-                          "week \(week.number)")
-        }
+        XCTAssertEqual(try settings(in: context).startingWeek, 3)
+        let slots = ScheduleGenerator.schedule(startingWeek: 3, startDate: date(2026, 1, 1),
+                                               calendar: calendar)
+        XCTAssertFalse(slots.contains { $0.week < 3 })
     }
 
-    func testApplyFreeClearsAnyScheduleAndStoresOptionalDate() throws {
+    /// A reconfigure to Free with no explicit date anchors `startDate` to today,
+    /// so `TodaySession` can surface the chosen starting session on that day.
+    /// First-run onboarding keeps the date optional (covered in `PlanSetupTests`).
+    func testApplyFreeReconfigureAnchorsStartDateToToday() throws {
+        let context = try context()
+        OnboardingCompletion.apply(PlanSetup(mode: .free, startingWeek: 1, startingDay: 1),
+                                   now: date(2026, 4, 6), markOnboardingComplete: false,
+                                   in: context, calendar: calendar)
+        XCTAssertEqual(try settings(in: context).startDate, date(2026, 4, 6))
+    }
+
+    func testApplyFreeStoresTheDateAndYieldsNoDatedSchedule() throws {
         let context = try context()
         OnboardingCompletion.apply(PlanSetup(mode: .threeDay, startingWeek: 1, startDate: date(2026, 1, 1)),
                                    in: context, calendar: calendar)
@@ -70,8 +90,14 @@ final class OnboardingCompletionTests: XCTestCase {
         let settings = try settings(in: context)
         XCTAssertEqual(settings.mode, .free)
         XCTAssertEqual(settings.startDate, date(2026, 2, 9))
-        XCTAssertTrue(try plan(in: context).orderedWeeks.flatMap(\.orderedDays)
-            .allSatisfy { $0.scheduledDate == nil })
+
+        // Free has no dated grid — PlanState surfaces at most the one next slot.
+        let state = try XCTUnwrap(PlanState.from(
+            settings: context.fetch(FetchDescriptor<UserSettings>()),
+            plans: context.fetch(FetchDescriptor<WorkoutPlan>()),
+            completions: [], today: date(2026, 1, 20), calendar: calendar))
+        XCTAssertEqual(state.schedule.count, 1)
+        XCTAssertEqual(state.schedule.first?.date, date(2026, 2, 9))
     }
 
     func testGateAndSetupSurviveAStoreReload() throws {

@@ -20,25 +20,23 @@ final class PlanSetupTests: XCTestCase {
                 context)
     }
 
-    // MARK: FreeProgression startingDay
+    // MARK: PlanProgress
 
-    func testFreeProgressionSkipsDaysBeforeStartingDay() throws {
+    func testPlanProgressSkipsDaysBeforeStartingDay() throws {
         let (_, plan, _) = try fixture()
-        let next = FreeProgression.nextDay(in: plan, startingWeek: 2, startingDay: 3) { _ in false }
-        XCTAssertEqual(next?.week?.number, 2)
-        XCTAssertEqual(next?.number, 3)
+        let next = PlanProgress.nextIncomplete(in: plan, startingWeek: 2, startingDay: 3,
+                                               completions: [])
+        XCTAssertEqual(next.map { [$0.week, $0.day] }, [2, 3])
     }
 
-    // MARK: PlanPosition
-
-    func testPlanPositionIsFirstNotDoneAtOrAfterStart() throws {
+    func testPlanProgressIsFirstNotDoneAtOrAfterStart() throws {
         let (_, plan, _) = try fixture()
         let done = [CompletionRecord(date: .now, workoutDayKey: "W1D1", durationSeconds: 1),
                     CompletionRecord(date: .now, workoutDayKey: "W1D2", durationSeconds: 1)]
-        XCTAssertEqual(PlanPosition.next(in: plan, startingWeek: 1, startingDay: 1,
-                                         completions: done).map { [$0.week, $0.day] }, [1, 3])
-        XCTAssertNil(PlanPosition.next(in: plan, startingWeek: 6, startingDay: 4,
-                                       completions: []))   // past the end
+        XCTAssertEqual(PlanProgress.nextIncomplete(in: plan, startingWeek: 1, startingDay: 1,
+                                                   completions: done).map { [$0.week, $0.day] }, [1, 3])
+        XCTAssertNil(PlanProgress.nextIncomplete(in: plan, startingWeek: 6, startingDay: 4,
+                                                 completions: []))   // past the end
     }
 
     // MARK: OnboardingCompletion.apply
@@ -64,8 +62,16 @@ final class PlanSetupTests: XCTestCase {
             PlanSetup(mode: .threeDay, startingWeek: 2, startingDay: 2, startDate: date(2026, 4, 6)),
             markOnboardingComplete: false, in: context, calendar: calendar)
 
-        XCTAssertNil(plan.day(week: 2, day: 1)?.scheduledDate)                 // dropped
-        XCTAssertEqual(plan.day(week: 2, day: 2)?.scheduledDate, date(2026, 4, 6))  // today
+        XCTAssertEqual(settings.startDate, date(2026, 4, 6))
+        XCTAssertEqual(settings.startingWeek, 2)
+        XCTAssertEqual(settings.startingDay, 2)
+
+        // The derived schedule lands (2, 2) on the start date and drops earlier days.
+        let slots = ScheduleGenerator.schedule(startingWeek: 2, startingDay: 2,
+                                               startDate: date(2026, 4, 6), calendar: calendar)
+        XCTAssertFalse(slots.contains { $0.week == 2 && $0.day == 1 })   // dropped
+        XCTAssertEqual(slots.first?.date, date(2026, 4, 6))             // (2, 2) today
+
         // TodaySession should hand back that very session, not "rest".
         let session = TodaySession.resolve(mode: .threeDay, plan: plan,
                                            startingWeek: 2, startingDay: 2,

@@ -6,16 +6,13 @@ import SwiftData
 /// nothing user-owned about it.
 enum AppReset {
 
-    /// Deletes completion history, clears every scheduled date, and resets
-    /// `UserSettings` to its first-run state (keeping the theme). The root
-    /// view's `onboardingCompleted` query then swaps the app for onboarding.
+    /// Deletes completion history and resets `UserSettings` to its first-run
+    /// state (keeping the theme). The schedule is derived from those settings,
+    /// so there's nothing else to clear. The root view's `onboardingCompleted`
+    /// query then swaps the app for onboarding.
     static func performFullReset(in context: ModelContext) {
         for record in (try? context.fetch(FetchDescriptor<CompletionRecord>())) ?? [] {
             context.delete(record)
-        }
-
-        if let plan = try? context.fetch(FetchDescriptor<WorkoutPlan>()).first {
-            ScheduleGenerator.clearSchedule(for: plan)
         }
 
         UserSettings.current(in: context).resetToFirstRun()

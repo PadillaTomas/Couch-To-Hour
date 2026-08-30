@@ -23,24 +23,3 @@ struct PlanSetup: Equatable {
         self.startDate = startDate
     }
 }
-
-/// Where the runner currently stands in the plan — the next session they'd do.
-/// Used to offer "Continue where you left off" when re-running setup.
-enum PlanPosition {
-    /// First not-done session at or after `(startingWeek, startingDay)`, in
-    /// week/day order. `nil` once the whole plan is complete.
-    static func next(in plan: WorkoutPlan,
-                     startingWeek: Int,
-                     startingDay: Int,
-                     completions: [CompletionRecord]) -> (week: Int, day: Int)? {
-        for week in plan.orderedWeeks where week.number >= startingWeek {
-            for day in week.orderedDays
-            where !(week.number == startingWeek && day.number < startingDay) {
-                if !DoneDetection.isComplete(day, among: completions) {
-                    return (week.number, day.number)
-                }
-            }
-        }
-        return nil
-    }
-}

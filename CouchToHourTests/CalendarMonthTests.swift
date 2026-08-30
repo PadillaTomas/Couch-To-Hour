@@ -17,11 +17,10 @@ final class CalendarMonthTests: XCTestCase {
     }
 
     private func month(_ anchor: Date,
-                       mode: TrainingMode = .free,
-                       plan: WorkoutPlan? = nil,
+                       schedule: [ScheduleGenerator.Slot] = [],
                        completions: [CompletionRecord] = [],
                        today: Date) -> CalendarMonth {
-        CalendarMonth.resolve(monthContaining: anchor, mode: mode, plan: plan,
+        CalendarMonth.resolve(monthContaining: anchor, schedule: schedule,
                               completions: completions, today: today, calendar: calendar)
     }
 
@@ -66,34 +65,26 @@ final class CalendarMonthTests: XCTestCase {
         XCTAssertEqual(state(m, day: 15), .done)
     }
 
-    func test3DayShowsFutureScheduled() throws {
-        let context = try seededContainer().mainContext
-        let plan = try XCTUnwrap(context.fetch(FetchDescriptor<WorkoutPlan>()).first)
+    func testFutureScheduledDayIsMarked() {
         let anchor = date(2026, 2, 2)
-        ScheduleGenerator.apply(to: plan, startingWeek: 1, startDate: anchor, calendar: calendar)
+        let schedule = ScheduleGenerator.schedule(startingWeek: 1, startDate: anchor, calendar: calendar)
+        let firstDay = calendar.component(.day, from: schedule[0].date)
 
-        let firstSlot = try XCTUnwrap(
-            ScheduleGenerator.schedule(startingWeek: 1, startDate: anchor, calendar: calendar).first
-        )
-        let firstDay = calendar.component(.day, from: firstSlot.date)
+        let m = month(schedule[0].date, schedule: schedule, today: date(2026, 1, 15))
+        XCTAssertEqual(state(m, day: firstDay), .scheduled)
+        XCTAssertTrue(m.days.contains { $0.state == .scheduled })
 
-        let threeDay = month(firstSlot.date, mode: .threeDay, plan: plan, today: date(2026, 1, 15))
-        XCTAssertEqual(state(threeDay, day: firstDay), .scheduled)
-        XCTAssertTrue(threeDay.days.contains { $0.state == .scheduled })
-
-        // Free mode ignores the schedule entirely.
-        let free = month(firstSlot.date, mode: .free, plan: plan, today: date(2026, 1, 15))
-        XCTAssertFalse(free.days.contains { $0.state == .scheduled })
+        // No schedule (Free mode with nothing ahead) → nothing scheduled.
+        let bare = month(schedule[0].date, schedule: [], today: date(2026, 1, 15))
+        XCTAssertFalse(bare.days.contains { $0.state == .scheduled })
     }
 
-    func testPastScheduledDayIsNotMarkedScheduled() throws {
-        let context = try seededContainer().mainContext
-        let plan = try XCTUnwrap(context.fetch(FetchDescriptor<WorkoutPlan>()).first)
+    func testPastScheduledDayIsNotMarkedScheduled() {
         let anchor = date(2026, 2, 2)
-        ScheduleGenerator.apply(to: plan, startingWeek: 1, startDate: anchor, calendar: calendar)
+        let schedule = ScheduleGenerator.schedule(startingWeek: 1, startDate: anchor, calendar: calendar)
 
         // "today" is after the whole February block → nothing in Feb is future.
-        let m = month(anchor, mode: .threeDay, plan: plan, today: date(2026, 4, 1))
+        let m = month(anchor, schedule: schedule, today: date(2026, 4, 1))
         XCTAssertFalse(m.days.contains { $0.state == .scheduled })
     }
 }

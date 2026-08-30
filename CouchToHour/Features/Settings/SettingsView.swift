@@ -1,6 +1,8 @@
 import SwiftData
 import SwiftUI
+import UIKit
 import UIWorkouts
+import UserNotifications
 
 /// Settings screen: the theme picker bound to the persisted `UserSettings`, plus
 /// placeholder nav rows for options that later modules fill in, and a full
@@ -12,6 +14,7 @@ struct SettingsView: View {
     @State private var showResetDialog = false
     @State private var showSetupAlert = false
     @State private var showSetupFlow = false
+    @State private var showReminderDeniedAlert = false
 
     private var mode: TrainingMode { settings.first?.mode ?? .threeDay }
 
@@ -61,6 +64,21 @@ struct SettingsView: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
 
+                if mode == .threeDay {
+                    VStack(alignment: .leading, spacing: WKSpace.md) {
+                        WKSectionHeader(Copy.Settings.reminders)
+                        VStack(spacing: 0) {
+                            WKToggleRow(Copy.Settings.remindersToggle, isOn: remindersBinding)
+                        }
+                        .background(WKColor.surface)
+                        .clipShape(RoundedRectangle(cornerRadius: WKRadius.card, style: .continuous))
+                        Text(Copy.Settings.remindersCaption)
+                            .wkFont(.caption)
+                            .foregroundStyle(WKColor.textTertiary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+
                 #if DEBUG
                 VStack(alignment: .leading, spacing: WKSpace.md) {
                     WKSectionHeader("Debug")
@@ -85,6 +103,16 @@ struct SettingsView: View {
             Text(Copy.Settings.switchModeBody)
         }
         .sheet(isPresented: $showSetupFlow) { PlanReconfigureSheet() }
+        .alert(Copy.Settings.remindersDeniedTitle, isPresented: $showReminderDeniedAlert) {
+            Button(Copy.Settings.remindersDeniedOpenSettings) {
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(url)
+                }
+            }
+            Button(Copy.Settings.remindersDeniedCancel, role: .cancel) {}
+        } message: {
+            Text(Copy.Settings.remindersDeniedBody)
+        }
         .alert(Copy.Settings.resetAlertTitle, isPresented: $showResetDialog) {
             Button(Copy.Settings.resetAlertConfirm, role: .destructive) {
                 AppReset.performFullReset(in: modelContext)
@@ -128,6 +156,49 @@ struct SettingsView: View {
             get: { settings.first?.dimOtherAudioDuringCues ?? true },
             set: { UserSettings.current(in: modelContext).dimOtherAudioDuringCues = $0 }
         )
+    }
+
+    private var remindersBinding: Binding<Bool> {
+        Binding(
+            get: { settings.first?.notificationsEnabled ?? false },
+            set: { handleRemindersToggle($0) }
+        )
+    }
+
+    /// Persist the toggle, then: turning on asks for notification permission
+    /// (flipping back off + pointing at iOS Settings if it's denied); either way
+    /// the pending reminders are reconciled to match.
+    private func handleRemindersToggle(_ on: Bool) {
+        UserSettings.current(in: modelContext).notificationsEnabled = on
+        modelContext.saveChanges("reminder toggle")
+
+        guard on else {
+            Task { await reconcileReminders() }
+            return
+        }
+        Task {
+            let center = UNUserNotificationCenter.current()
+            var status = await center.alertAuthorizationStatus()
+            if status == .notDetermined {
+                _ = await center.requestAlertAuthorization()
+                status = await center.alertAuthorizationStatus()
+            }
+            guard status == .authorized else {
+                UserSettings.current(in: modelContext).notificationsEnabled = false
+                modelContext.saveChanges("reminder permission denied")
+                showReminderDeniedAlert = true
+                return
+            }
+            await reconcileReminders()
+        }
+    }
+
+    private func reconcileReminders() async {
+        await SessionReminderSync.reconcile(
+            plan: try? modelContext.fetch(FetchDescriptor<WorkoutPlan>()).first,
+            settings: UserSettings.current(in: modelContext),
+            completions: (try? modelContext.fetch(FetchDescriptor<CompletionRecord>())) ?? [],
+            center: UNUserNotificationCenter.current())
     }
 }
 

@@ -13,23 +13,15 @@ struct CalendarView: View {
     @State private var selectedDate = Calendar.current.startOfDay(for: .now)
 
     private var calendar: Calendar { .current }
-    private var mode: TrainingMode { settingsRows.first?.mode ?? .threeDay }
 
-    /// Free mode: the runner's next session paired with their first-run date, so
-    /// the calendar has one thing ahead to aim at. `nil` in 3-Day / when unset.
-    private var freeFirstSession: (date: Date, week: Int, day: Int)? {
-        guard mode == .free,
-              let s = settingsRows.first, let startDate = s.startDate, let plan = plans.first,
-              let next = PlanPosition.next(in: plan, startingWeek: s.startingWeek,
-                                           startingDay: s.startingDay, completions: completions)
-        else { return nil }
-        return (startDate, next.week, next.day)
+    private var planState: PlanState? {
+        PlanState.from(settings: settingsRows, plans: plans, completions: completions)
     }
 
     private var month: CalendarMonth {
-        CalendarMonth.resolve(monthContaining: monthAnchor, mode: mode, plan: plans.first,
-                              completions: completions, today: .now,
-                              freeFirstSession: freeFirstSession?.date, calendar: calendar)
+        planState?.month(containing: monthAnchor)
+            ?? CalendarMonth.resolve(monthContaining: monthAnchor, schedule: [],
+                                     completions: completions, today: .now, calendar: calendar)
     }
 
     /// Day-of-month to ring in the grid — nil when the selection is in another month.
@@ -39,9 +31,7 @@ struct CalendarView: View {
     }
 
     private var info: CalendarDayInfo {
-        CalendarDayInfo.resolve(date: selectedDate, mode: mode, plan: plans.first,
-                                completions: completions, today: .now,
-                                freeFirstSession: freeFirstSession, calendar: calendar)
+        planState?.dayInfo(for: selectedDate) ?? .rest
     }
 
     var body: some View {

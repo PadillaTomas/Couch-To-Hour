@@ -1,9 +1,10 @@
 import Foundation
 import SwiftData
 
-/// The side-effecting write of a ``PlanSetup``: pushes it to `UserSettings`,
-/// (re)builds or clears the schedule, and — at first launch only — flips the
-/// first-run gate. Split out from the view so it can be unit-tested.
+/// The side-effecting write of a ``PlanSetup``: pushes the four plan inputs to
+/// `UserSettings` and — at first launch only — flips the first-run gate. The
+/// schedule itself is *not* written anywhere; it's derived from these inputs on
+/// demand (see ``PlanState``). Split out from the view so it can be unit-tested.
 enum OnboardingCompletion {
 
     /// Apply a setup.
@@ -20,24 +21,30 @@ enum OnboardingCompletion {
         settings.mode = setup.mode
         settings.startingWeek = setup.startingWeek
         settings.startingDay = setup.startingDay
-
-        let plan = try? context.fetch(FetchDescriptor<WorkoutPlan>()).first
+        // Every (re)configuration starts a fresh plan instance: from here on,
+        // progression follows the new plan and the new schedule. Sessions logged
+        // before this instant stay on the calendar but no longer pre-complete
+        // anything (see `PlanState.planCompletions`).
+        settings.planEpoch = now
 
         switch setup.mode {
         case .threeDay:
             let startDate = calendar.startOfDay(for: setup.startDate ?? now)
             settings.startDate = startDate
             settings.startWeekday = calendar.component(.weekday, from: startDate)   // for display
-            if let plan {
-                ScheduleGenerator.apply(to: plan,
-                                        startingWeek: setup.startingWeek,
-                                        startingDay: setup.startingDay,
-                                        startDate: startDate,
-                                        calendar: calendar)
-            }
         case .free:
-            settings.startDate = setup.startDate.map { calendar.startOfDay(for: $0) }
-            if let plan { ScheduleGenerator.clearSchedule(for: plan) }
+            // A reconfigure from Settings takes effect *today* unless the runner
+            // picked an explicit future date — that anchor is what lets Today
+            // show the chosen starting session even if it was done on an earlier
+            // pass (see `TodaySession.resolve`). First-run onboarding keeps the
+            // date optional (nil = "no start date set").
+            if let picked = setup.startDate {
+                settings.startDate = calendar.startOfDay(for: picked)
+            } else if !markOnboardingComplete {
+                settings.startDate = calendar.startOfDay(for: now)
+            } else {
+                settings.startDate = nil
+            }
         }
 
         if markOnboardingComplete { settings.onboardingCompleted = true }

@@ -634,6 +634,30 @@
         }
       }
     },
+    "reminders.notification.body" : {
+      "comment" : "%1$lld minutes, %2$@ interval summary",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld min · %2$@"
+          }
+        }
+      }
+    },
+    "reminders.notification.title" : {
+      "comment" : "%1$lld week, %2$lld day",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Run day — Week %1$lld · Day %2$lld"
+          }
+        }
+      }
+    },
     "settings.appearance" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -707,6 +731,83 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Plan"
+          }
+        }
+      }
+    },
+    "settings.reminders" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reminders"
+          }
+        }
+      }
+    },
+    "settings.reminders.deniedBody" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Turn on notifications for Couch-To-Hour in the Settings app to get run-day reminders."
+          }
+        }
+      }
+    },
+    "settings.reminders.deniedCancel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not now"
+          }
+        }
+      }
+    },
+    "settings.reminders.deniedOpenSettings" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Settings"
+          }
+        }
+      }
+    },
+    "settings.reminders.deniedTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notifications are off"
+          }
+        }
+      }
+    },
+    "settings.reminders.toggle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Run-day reminders"
+          }
+        }
+      }
+    },
+    "settings.reminders.caption" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A notification at 7 AM on each scheduled run day. 3-Day mode only."
           }
         }
       }

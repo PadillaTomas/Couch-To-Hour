@@ -64,30 +64,11 @@ final class ScheduleGeneratorTests: XCTestCase {
         XCTAssertEqual(slots.first { $0.week == 3 && $0.day == 1 }?.date, date(2026, 1, 10))
     }
 
-    func testApplyWritesAndClearsScheduledDates() throws {
-        let context = try seededContainer().mainContext
-        let plan = try XCTUnwrap(context.fetch(FetchDescriptor<WorkoutPlan>()).first)
-
-        ScheduleGenerator.apply(to: plan, startingWeek: 1, startDate: date(2026, 1, 1),
-                                calendar: calendar)
-        let days = plan.orderedWeeks.flatMap(\.orderedDays)
-        XCTAssertTrue(days.allSatisfy { $0.scheduledDate != nil })
-
-        ScheduleGenerator.clearSchedule(for: plan)
-        XCTAssertTrue(days.allSatisfy { $0.scheduledDate == nil })
-    }
-
-    func testApplyWithLaterStartingWeekClearsEarlierWeeks() throws {
-        let context = try seededContainer().mainContext
-        let plan = try XCTUnwrap(context.fetch(FetchDescriptor<WorkoutPlan>()).first)
-
-        ScheduleGenerator.apply(to: plan, startingWeek: 3, startDate: date(2026, 1, 1),
-                                calendar: calendar)
-
-        for week in plan.orderedWeeks {
-            let expectDates = week.number >= 3
-            XCTAssertEqual(week.orderedDays.allSatisfy { ($0.scheduledDate != nil) == expectDates }, true,
-                           "week \(week.number)")
-        }
+    func testLaterStartingWeekProducesNoSlotsForEarlierWeeks() {
+        let slots = ScheduleGenerator.schedule(startingWeek: 3, startDate: date(2026, 1, 1),
+                                               calendar: calendar)
+        XCTAssertFalse(slots.contains { $0.week < 3 })
+        XCTAssertEqual(Set(slots.map(\.week)), [3, 4, 5, 6])
+        XCTAssertEqual(slots.count, 12)
     }
 }
