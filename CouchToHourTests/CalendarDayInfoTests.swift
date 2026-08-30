@@ -35,8 +35,21 @@ final class CalendarDayInfoTests: XCTestCase {
         XCTAssertEqual(items(info), [
             .init(week: 1, day: 1,
                   groups: [.init(id: 0, runSeconds: 60, walkSeconds: 60, repeatCount: 10)],
-                  status: .done(durationSeconds: 1140, feltRating: 6))
+                  status: .done(durationSeconds: 1140, feltRating: 6, photoFile: nil))
         ])
+    }
+
+    func testDoneItemCarriesTheAttachedPhotoFile() throws {
+        let record = CompletionRecord(date: date(2026, 1, 5), workoutDayKey: "W1D1",
+                                      durationSeconds: 1200, feltRating: 6, photoPath: "abc.jpg")
+        let info = CalendarDayInfo.resolve(date: date(2026, 1, 5), plan: try plan(),
+                                           schedule: schedule, completions: [record],
+                                           today: date(2026, 1, 20), calendar: calendar)
+        if case .done(_, _, let photoFile) = items(info).first?.status {
+            XCTAssertEqual(photoFile, "abc.jpg")
+        } else {
+            XCTFail("expected a done item")
+        }
     }
 
     func testTwoSessionsOnOneDayBothShow() throws {

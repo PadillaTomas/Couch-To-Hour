@@ -106,8 +106,22 @@ enum Copy {
         static var body: String { String(localized: "postWorkout.body") }
         static var easyLabel: String { String(localized: "postWorkout.easyLabel") }
         static var hardLabel: String { String(localized: "postWorkout.hardLabel") }
+        static var addPhoto: String { String(localized: "postWorkout.addPhoto") }
+        static var takePhoto: String { String(localized: "postWorkout.takePhoto") }
+        static var chooseFromLibrary: String { String(localized: "postWorkout.chooseFromLibrary") }
+        static var changePhoto: String { String(localized: "postWorkout.changePhoto") }
+        static var removePhoto: String { String(localized: "postWorkout.removePhoto") }
+        static var photoAlt: String { String(localized: "postWorkout.photoAlt") }
+        static var cameraDeniedTitle: String { String(localized: "postWorkout.cameraDeniedTitle") }
+        static var cameraDeniedBody: String { String(localized: "postWorkout.cameraDeniedBody") }
+        static var openSettings: String { String(localized: "postWorkout.openSettings") }
+        static var notNow: String { String(localized: "postWorkout.notNow") }
         static var save: String { String(localized: "postWorkout.save") }
         static var skip: String { String(localized: "postWorkout.skip") }
+    }
+
+    enum PhotoViewer {
+        static var close: String { String(localized: "photoViewer.close") }
     }
 
     enum PlanOverview {

@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "" : {
+
+    },
     "calendar.dayTitle" : {
       "comment" : "%1$lld week, %2$lld day",
       "extractionState" : "manual",
@@ -346,6 +349,17 @@
         }
       }
     },
+    "photoViewer.close" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close"
+          }
+        }
+      }
+    },
     "planOverview.body" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -505,14 +519,6 @@
         }
       }
     },
-    "planSetup.startDateTitle" : {
-      "extractionState" : "manual",
-      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "When do you want to start?" } } }
-    },
-    "planSetup.startDateBody" : {
-      "extractionState" : "manual",
-      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Your first session is on this day; the rest follow every second day. Today is fine." } } }
-    },
     "planSetup.freeDateTitle" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -557,6 +563,39 @@
         }
       }
     },
+    "planSetup.startDateBody" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your first session is on this day; the rest follow every second day. Today is fine."
+          }
+        }
+      }
+    },
+    "planSetup.startDateTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When do you want to start?"
+          }
+        }
+      }
+    },
+    "postWorkout.addPhoto" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add a photo"
+          }
+        }
+      }
+    },
     "postWorkout.body" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -564,6 +603,50 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "1 is easy, 10 is all out. It just helps you look back later."
+          }
+        }
+      }
+    },
+    "postWorkout.cameraDeniedBody" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Turn on camera access for Couch-To-Hour in the Settings app to take a photo."
+          }
+        }
+      }
+    },
+    "postWorkout.cameraDeniedTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Camera is off"
+          }
+        }
+      }
+    },
+    "postWorkout.changePhoto" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change photo"
+          }
+        }
+      }
+    },
+    "postWorkout.chooseFromLibrary" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose from Library"
           }
         }
       }
@@ -601,6 +684,51 @@
         }
       }
     },
+    "postWorkout.notNow" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not now"
+          }
+        }
+      }
+    },
+    "postWorkout.openSettings" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Settings"
+          }
+        }
+      }
+    },
+    "postWorkout.photoAlt" : {
+      "comment" : "Accessibility label for the attached workout photo",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Workout photo"
+          }
+        }
+      }
+    },
+    "postWorkout.removePhoto" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove photo"
+          }
+        }
+      }
+    },
     "postWorkout.save" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -619,6 +747,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Skip"
+          }
+        }
+      }
+    },
+    "postWorkout.takePhoto" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Take Photo"
           }
         }
       }
@@ -746,6 +885,17 @@
         }
       }
     },
+    "settings.reminders.caption" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A notification at 7 AM on each scheduled run day. 3-Day mode only."
+          }
+        }
+      }
+    },
     "settings.reminders.deniedBody" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -797,17 +947,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Run-day reminders"
-          }
-        }
-      }
-    },
-    "settings.reminders.caption" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A notification at 7 AM on each scheduled run day. 3-Day mode only."
           }
         }
       }
@@ -1271,6 +1410,29 @@
         }
       }
     },
+    "today.notStartedBody" : {
+      "comment" : "%@ is a formatted date, e.g. Monday, January 5",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your plan starts %@. See you then."
+          }
+        }
+      }
+    },
+    "today.notStartedTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not yet"
+          }
+        }
+      }
+    },
     "today.planComplete.body" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1314,15 +1476,6 @@
           }
         }
       }
-    },
-    "today.notStartedTitle" : {
-      "extractionState" : "manual",
-      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Not yet" } } }
-    },
-    "today.notStartedBody" : {
-      "comment" : "%@ is a formatted date, e.g. Monday, January 5",
-      "extractionState" : "manual",
-      "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Your plan starts %@. See you then." } } }
     },
     "today.settingUp" : {
       "extractionState" : "manual",
