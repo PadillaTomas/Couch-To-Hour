@@ -2,7 +2,8 @@ import Foundation
 
 /// 3-Day mode schedule generation: a **start date** becomes concrete dated
 /// sessions, one rest day between each, covering every remaining week of the
-/// plan. Pure — the persistence side lives in ``apply(to:...)``.
+/// plan. Pure and stateless — the schedule is *never* persisted, it's derived
+/// on demand from the four `UserSettings` inputs (see ``PlanState``).
 enum ScheduleGenerator {
 
     struct Slot: Equatable {
@@ -43,33 +44,5 @@ enum ScheduleGenerator {
             }
         }
         return slots
-    }
-
-    /// Writes generated dates onto the plan's `WorkoutDay` rows. Days outside
-    /// the `(startingWeek, startingDay)…(6, 3)` range are cleared.
-    static func apply(to plan: WorkoutPlan,
-                      startingWeek: Int,
-                      startingDay: Int = 1,
-                      startDate: Date,
-                      calendar: Calendar = .current) {
-        let dates = Dictionary(
-            uniqueKeysWithValues: schedule(startingWeek: startingWeek,
-                                           startingDay: startingDay,
-                                           startDate: startDate,
-                                           calendar: calendar)
-                .map { (WorkoutDay.completionKey(week: $0.week, day: $0.day), $0.date) }
-        )
-        for week in plan.orderedWeeks {
-            for day in week.orderedDays {
-                day.scheduledDate = dates[WorkoutDay.completionKey(week: week.number, day: day.number)]
-            }
-        }
-    }
-
-    /// Free mode: no dated schedule.
-    static func clearSchedule(for plan: WorkoutPlan) {
-        for week in plan.weeks {
-            for day in week.days { day.scheduledDate = nil }
-        }
     }
 }

@@ -40,6 +40,18 @@ final class UserSettings {
     /// is generated from; in Free it's the optional first-run date (or `nil`).
     var startDate: Date?
 
+    /// Exact instant the current plan instance began — every onboarding /
+    /// reconfigure stamps `.now` here. Completions logged *before* it belong to
+    /// a previous plan: they stay on the calendar as done history forever, but
+    /// they don't drive the current plan's progression (see ``PlanState``).
+    /// ``planEpochUnset`` = no reconfigure yet, everything counts (also what an
+    /// older store migrates in with).
+    var planEpoch: Date = Date(timeIntervalSince1970: 0)
+
+    /// Sentinel for "no plan instance recorded yet" — every real completion is
+    /// newer, so all history counts.
+    static let planEpochUnset = Date(timeIntervalSince1970: 0)
+
     /// Placeholder for MVP+ local reminders. Unused in Step 1.
     var notificationsEnabled: Bool = false
 
@@ -57,6 +69,7 @@ final class UserSettings {
          startWeekday: Int = 2,
          startingWeek: Int = 1,
          startDate: Date? = nil,
+         planEpoch: Date = UserSettings.planEpochUnset,
          notificationsEnabled: Bool = false,
          dimOtherAudioDuringCues: Bool = true,
          onboardingCompleted: Bool = false) {
@@ -65,6 +78,7 @@ final class UserSettings {
         self.startWeekday = startWeekday
         self.startingWeek = startingWeek
         self.startDate = startDate
+        self.planEpoch = planEpoch
         self.notificationsEnabled = notificationsEnabled
         self.dimOtherAudioDuringCues = dimOtherAudioDuringCues
         self.onboardingCompleted = onboardingCompleted
@@ -90,6 +104,7 @@ final class UserSettings {
         startingWeek = 1
         startingDay = 1
         startDate = nil
+        planEpoch = UserSettings.planEpochUnset
         notificationsEnabled = false
         onboardingCompleted = false
     }

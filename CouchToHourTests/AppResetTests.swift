@@ -21,7 +21,6 @@ final class AppResetTests: XCTestCase {
         AppReset.performFullReset(in: context)
 
         XCTAssertEqual(try context.fetchCount(FetchDescriptor<CompletionRecord>()), 0)
-        XCTAssertTrue(plan.orderedWeeks.flatMap(\.orderedDays).allSatisfy { $0.scheduledDate == nil })
 
         let reset = try XCTUnwrap(context.fetch(FetchDescriptor<UserSettings>()).first)
         XCTAssertFalse(reset.onboardingCompleted)

@@ -19,12 +19,13 @@ enum CalendarDayInfo: Equatable {
     case sessions([Item])
     case rest
 
+    /// - Parameters:
+    ///   - schedule: the resolved upcoming sessions (see ``PlanState/schedule``).
     static func resolve(date: Date,
-                        mode: TrainingMode,
                         plan: WorkoutPlan?,
+                        schedule: [ScheduleGenerator.Slot],
                         completions: [CompletionRecord],
                         today: Date,
-                        freeFirstSession: (date: Date, week: Int, day: Int)? = nil,
                         calendar: Calendar = .current) -> CalendarDayInfo {
         var items: [Item] = []
 
@@ -40,19 +41,9 @@ enum CalendarDayInfo: Equatable {
         }
 
         // A session scheduled for this day, unless a completion already covers it.
-        let scheduled: (week: Int, day: Int)? = {
-            if mode == .free, let f = freeFirstSession,
-               calendar.isDate(f.date, inSameDayAs: date) {
-                return (f.week, f.day)
-            }
-            if mode == .threeDay,
-               let d = (plan?.orderedWeeks.flatMap(\.orderedDays) ?? []).first(where: {
-                   $0.scheduledDate.map { calendar.isDate($0, inSameDayAs: date) } ?? false
-               }), let week = d.week?.number {
-                return (week, d.number)
-            }
-            return nil
-        }()
+        let scheduled = schedule
+            .first { calendar.isDate($0.date, inSameDayAs: date) }
+            .map { (week: $0.week, day: $0.day) }
         if let s = scheduled,
            let workoutDay = plan?.day(week: s.week, day: s.day),
            !items.contains(where: { $0.week == s.week && $0.day == s.day }) {

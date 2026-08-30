@@ -51,6 +51,48 @@ final class TodaySessionTests: XCTestCase {
         XCTAssertEqual(s, .planComplete)
     }
 
+    func testCoordinateExposesTheResolvedSession() {
+        XCTAssertEqual(TodaySession.session(week: 3, day: 2, makeup: true).coordinate.map { [$0.week, $0.day] }, [3, 2])
+        XCTAssertEqual(TodaySession.missedChoice(missedWeek: 1, missedDay: 1, todayWeek: 2, todayDay: 3)
+            .coordinate.map { [$0.week, $0.day] }, [2, 3])
+        XCTAssertNil(TodaySession.rest.coordinate)
+        XCTAssertNil(TodaySession.planComplete.coordinate)
+        XCTAssertNil(TodaySession.notStartedYet(.now).coordinate)
+    }
+
+    /// Reconfigured to "start at W1 D1 today" after an earlier pass through
+    /// W1–W3 → Today shows W1 D1, overriding the next-incomplete default. The
+    /// old completion records are left alone.
+    func testFreeShowsTheChosenStartingPointOnTheDayItWasSet() throws {
+        let earlier = (1...3).flatMap { w in (1...3).map { d in "W\(w)D\(d)" } }
+        let s = TodaySession.resolve(mode: .free, plan: try plan(),
+                                     startingWeek: 1, startingDay: 1,
+                                     startDate: date(2026, 4, 6), completions: done(all: earlier),
+                                     today: date(2026, 4, 6), calendar: calendar)
+        XCTAssertEqual(s, .session(week: 1, day: 1, makeup: false))
+    }
+
+    func testFreeResumesNormalProgressionAfterTheReconfigureDay() throws {
+        let earlier = (1...3).flatMap { w in (1...3).map { d in "W\(w)D\(d)" } }
+        let s = TodaySession.resolve(mode: .free, plan: try plan(),
+                                     startingWeek: 1, startingDay: 1,
+                                     startDate: date(2026, 4, 6), completions: done(all: earlier),
+                                     today: date(2026, 4, 8), calendar: calendar)
+        XCTAssertEqual(s, .session(week: 4, day: 1, makeup: false))
+    }
+
+    func testFreeChosenStartingPointFallsThroughOnceLoggedToday() throws {
+        let earlier = (1...3).flatMap { w in (1...3).map { d in "W\(w)D\(d)" } }
+        var completions = done(all: earlier)
+        completions.append(CompletionRecord(date: date(2026, 4, 6), workoutDayKey: "W1D1",
+                                            durationSeconds: 0))
+        let s = TodaySession.resolve(mode: .free, plan: try plan(),
+                                     startingWeek: 1, startingDay: 1,
+                                     startDate: date(2026, 4, 6), completions: completions,
+                                     today: date(2026, 4, 6), calendar: calendar)
+        XCTAssertEqual(s, .session(week: 4, day: 1, makeup: false))
+    }
+
     // MARK: 3-Day  (start Mon 2026-01-05 → W1 D1 Jan5 / D2 Jan7 / D3 Jan9)
 
     private func threeDay(today: Date, completions: [CompletionRecord]) throws -> TodaySession {

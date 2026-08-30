@@ -22,10 +22,12 @@ final class DemoDataTests: XCTestCase {
         XCTAssertTrue(completions.allSatisfy { $0.date < now }, "completions must be in the past")
         XCTAssertTrue(completions.allSatisfy { ($0.feltRating ?? 0) >= 1 })
 
-        let plan = try XCTUnwrap(context.fetch(FetchDescriptor<WorkoutPlan>()).first)
-        let scheduled = plan.orderedWeeks.flatMap(\.orderedDays).compactMap(\.scheduledDate)
-        XCTAssertEqual(scheduled.count, 18, "the whole plan should be scheduled")
-        XCTAssertTrue(scheduled.contains { $0 > now }, "some sessions must be upcoming")
+        // The demo anchors the schedule ~2.5 weeks back, so some sessions are
+        // still ahead of `now`. The schedule is derived from settings, not stored.
+        let anchor = try XCTUnwrap(settings.startDate)
+        let schedule = ScheduleGenerator.schedule(startingWeek: 1, startDate: anchor)
+        XCTAssertEqual(schedule.count, 18, "the whole plan should be scheduled")
+        XCTAssertTrue(schedule.contains { $0.date > now }, "some sessions must be upcoming")
     }
 
     func testLoadThreeDayIsIdempotent() throws {

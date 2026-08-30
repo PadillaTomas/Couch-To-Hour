@@ -45,14 +45,11 @@ struct PlanOverview: Equatable {
                         completions: [CompletionRecord]) -> PlanOverview {
         let isDone: (WorkoutDay) -> Bool = { DoneDetection.isComplete($0, among: completions) }
 
-        // "Next" = first not-done day, in week/day order, at or after startingWeek.
-        var nextID: String?
-        for week in plan.orderedWeeks where week.number >= startingWeek {
-            if let day = week.orderedDays.first(where: { !isDone($0) }) {
-                nextID = "W\(week.number)D\(day.number)"
-                break
-            }
-        }
+        // "Next" = the runner's raw position — first not-done day at or after
+        // the starting week (see ``PlanProgress``).
+        let nextID = PlanProgress.nextIncomplete(in: plan, startingWeek: startingWeek,
+                                                 completions: completions)
+            .map { "W\($0.week)D\($0.day)" }
 
         let weeks = plan.orderedWeeks.map { week in
             Week(number: week.number, days: week.orderedDays.map { day in

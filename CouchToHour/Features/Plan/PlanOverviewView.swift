@@ -20,11 +20,14 @@ struct PlanOverviewView: View {
 
     private var overview: PlanOverview? {
         guard let plan = plans.first else { return nil }
-        return PlanOverview.resolve(
-            plan: plan,
-            startingWeek: showsProgress ? (settingsRows.first?.startingWeek ?? 1) : 1,
-            completions: showsProgress ? completions : []
-        )
+        // From Settings: the runner's real progress, via the shared PlanState so
+        // it's scoped to the current plan instance (same as Today / Calendar).
+        // From onboarding: a plain browse of the whole plan, no progress.
+        if showsProgress, let state = PlanState.from(settings: settingsRows, plans: plans,
+                                                     completions: completions) {
+            return state.overview
+        }
+        return PlanOverview.resolve(plan: plan, startingWeek: 1, completions: [])
     }
 
     var body: some View {

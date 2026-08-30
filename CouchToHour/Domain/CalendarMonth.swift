@@ -23,15 +23,13 @@ struct CalendarMonth: Equatable {
 
     /// - Parameters:
     ///   - monthContaining: any date in the month to render.
-    ///   - mode: `.free` shows only the optional `freeFirstSession` ahead.
-    ///   - freeFirstSession: Free mode — the date of the runner's next session,
-    ///     if they set a first-run date. Ignored in 3-Day.
+    ///   - schedule: the resolved upcoming sessions (`[]` when there's no dated
+    ///     schedule — Free mode with no start date ahead). 3-Day / Free is not a
+    ///     distinction here; both come in as slots via ``PlanState``.
     static func resolve(monthContaining date: Date,
-                        mode: TrainingMode,
-                        plan: WorkoutPlan?,
+                        schedule: [ScheduleGenerator.Slot],
                         completions: [CompletionRecord],
                         today: Date,
-                        freeFirstSession: Date? = nil,
                         calendar: Calendar = .current) -> CalendarMonth {
         let monthStart = calendar.date(from: calendar.dateComponents([.year, .month], from: date))!
         let dayCount = calendar.range(of: .day, in: .month, for: monthStart)!.count
@@ -39,9 +37,7 @@ struct CalendarMonth: Equatable {
         // Monday-first column for the 1st (Calendar weekday: 1 Sun … 7 Sat).
         let leadingBlanks = (calendar.component(.weekday, from: monthStart) - 2 + 7) % 7
 
-        let scheduledDates: [Date] = mode == .threeDay
-            ? (plan?.orderedWeeks.flatMap(\.orderedDays) ?? []).compactMap(\.scheduledDate)
-            : freeFirstSession.map { [$0] } ?? []
+        let scheduledDates = schedule.map(\.date)
         let startOfToday = calendar.startOfDay(for: today)
 
         let days: [Day] = (1...dayCount).map { number in

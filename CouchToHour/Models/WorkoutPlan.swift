@@ -55,16 +55,11 @@ final class WorkoutDay {
     /// 1…3 — D1 / D2 / D3.
     var number: Int
 
-    /// Concrete calendar date in 3-Day mode; `nil` in Free mode (and before
-    /// onboarding runs schedule generation).
-    var scheduledDate: Date?
-
     @Relationship(deleteRule: .cascade, inverse: \Interval.day)
     var intervals: [Interval] = []
 
-    init(number: Int, scheduledDate: Date? = nil) {
+    init(number: Int) {
         self.number = number
-        self.scheduledDate = scheduledDate
     }
 
     /// The raw plan-notation blocks in play order. Expand with ``SessionPlan``

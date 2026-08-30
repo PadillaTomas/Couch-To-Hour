@@ -34,18 +34,11 @@ struct TodayView: View {
     private var settings: UserSettings? { settingsRows.first }
     private var plan: WorkoutPlan? { plans.first }
 
-    private var session: TodaySession? {
-        guard let settings, let plan else { return nil }
-        return TodaySession.resolve(
-            mode: settings.mode,
-            plan: plan,
-            startingWeek: settings.startingWeek,
-            startingDay: settings.startingDay,
-            startDate: settings.startDate,
-            completions: completions,
-            today: .now
-        )
+    private var planState: PlanState? {
+        PlanState.from(settings: settingsRows, plans: plans, completions: completions)
     }
+
+    private var session: TodaySession? { planState?.currentSession }
 
     var body: some View {
         ZStack {

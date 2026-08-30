@@ -15,22 +15,20 @@ enum DemoData {
 
         let calendar = Calendar.current
         let anchor = calendar.date(byAdding: .day, value: -18, to: calendar.startOfDay(for: now))!
-
-        ScheduleGenerator.apply(to: plan, startingWeek: 1, startDate: anchor, calendar: calendar)
+        let schedule = ScheduleGenerator.schedule(startingWeek: 1, startDate: anchor,
+                                                  calendar: calendar)
 
         // Complete every session whose scheduled date is already in the past.
         let ratings = [5, 6, 5, 7, 6, 8, 6, 7, 6, 7]
-        var index = 0
-        for day in plan.orderedWeeks.flatMap(\.orderedDays) {
-            guard let scheduled = day.scheduledDate,
-                  scheduled < calendar.startOfDay(for: now) else { continue }
+        for (index, slot) in schedule.enumerated()
+        where slot.date < calendar.startOfDay(for: now) {
+            guard let day = plan.day(week: slot.week, day: slot.day) else { continue }
             context.insert(CompletionRecord(
-                date: scheduled,
+                date: slot.date,
                 workoutDayKey: day.completionKey,
                 durationSeconds: SessionPlan(day: day).totalSeconds,
                 feltRating: ratings[index % ratings.count]
             ))
-            index += 1
         }
 
         let settings = UserSettings.current(in: context)
@@ -39,6 +37,7 @@ enum DemoData {
         settings.startingWeek = 1
         settings.startingDay = 1
         settings.startDate = anchor
+        settings.planEpoch = anchor   // this "instance" began when the demo schedule did
         settings.onboardingCompleted = true
 
         try? context.save()
@@ -47,9 +46,6 @@ enum DemoData {
     static func clear(from context: ModelContext) {
         for record in (try? context.fetch(FetchDescriptor<CompletionRecord>())) ?? [] {
             context.delete(record)
-        }
-        if let plan = try? context.fetch(FetchDescriptor<WorkoutPlan>()).first {
-            ScheduleGenerator.clearSchedule(for: plan)
         }
         try? context.save()
     }

@@ -21,12 +21,12 @@ struct PlanReconfigureSheet: View {
         )
     }
 
+    /// "Continue where you left off" — the runner's position in the *current*
+    /// plan instance (via ``PlanState``), so pre-reconfigure history doesn't
+    /// drag the suggestion forward.
     private var continueCoord: PlanSetupFlow.Coord? {
-        guard let plan = plans.first else { return nil }
-        return PlanPosition.next(in: plan,
-                                 startingWeek: current.startingWeek,
-                                 startingDay: current.startingDay,
-                                 completions: completions)
+        PlanState.from(settings: settingsRows, plans: plans, completions: completions)?
+            .currentSession.coordinate
             .map { PlanSetupFlow.Coord(week: $0.week, day: $0.day) }
     }
 
@@ -35,6 +35,9 @@ struct PlanReconfigureSheet: View {
             context: .reconfigure(current: current, continueAt: continueCoord),
             onComplete: { setup in
                 OnboardingCompletion.apply(setup, markOnboardingComplete: false, in: context)
+                // A plan change starts a fresh instance — any half-finished
+                // session from the old setup is no longer valid.
+                SessionResumeStore.clear()
                 dismiss()
             },
             onCancel: { dismiss() }

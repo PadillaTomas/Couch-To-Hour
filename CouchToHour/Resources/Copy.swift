@@ -183,6 +183,13 @@ enum Copy {
         }
         static var switchModeTitle: String { String(localized: "settings.switchModeTitle") }
         static var switchModeBody: String { String(localized: "settings.switchModeBody") }
+        static var reminders: String { String(localized: "settings.reminders") }
+        static var remindersToggle: String { String(localized: "settings.reminders.toggle") }
+        static var remindersCaption: String { String(localized: "settings.reminders.caption") }
+        static var remindersDeniedTitle: String { String(localized: "settings.reminders.deniedTitle") }
+        static var remindersDeniedBody: String { String(localized: "settings.reminders.deniedBody") }
+        static var remindersDeniedOpenSettings: String { String(localized: "settings.reminders.deniedOpenSettings") }
+        static var remindersDeniedCancel: String { String(localized: "settings.reminders.deniedCancel") }
         static var audio: String { String(localized: "settings.audio") }
         static var dimOtherAudio: String { String(localized: "settings.dimOtherAudio") }
         static var dimOtherAudioCaption: String { String(localized: "settings.dimOtherAudioCaption") }
@@ -192,5 +199,16 @@ enum Copy {
         static var resetAlertBody: String { String(localized: "settings.reset.alertBody") }
         static var resetAlertConfirm: String { String(localized: "settings.reset.alertConfirm") }
         static var resetAlertCancel: String { String(localized: "settings.reset.alertCancel") }
+    }
+
+    enum Reminders {
+        static func notificationTitle(week: Int, day: Int) -> String {
+            String(localized: "reminders.notification.title",
+                   defaultValue: "Run day — Week \(week) · Day \(day)")
+        }
+        static func notificationBody(minutes: Int, summary: String) -> String {
+            String(localized: "reminders.notification.body",
+                   defaultValue: "\(minutes) min · \(summary)")
+        }
     }
 }
