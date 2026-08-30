@@ -28,3 +28,6 @@ fastlane/test_output
 
 # Secrets
 *.xcconfig.local
+
+# Machine-specific Xcode workspace prefs
+WorkspaceSettings.xcsettings
