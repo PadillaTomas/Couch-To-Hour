@@ -7,8 +7,10 @@ final class PhotoStoreTests: XCTestCase {
     private var dir: URL!
 
     override func setUpWithError() throws {
+        // Space in the path on purpose — mirrors "Application Support", which
+        // broke `UIImage(contentsOfFile:)` via percent-encoding.
         dir = FileManager.default.temporaryDirectory
-            .appendingPathComponent("photostore-\(UUID().uuidString)", isDirectory: true)
+            .appendingPathComponent("photo store \(UUID().uuidString)", isDirectory: true)
     }
     override func tearDownWithError() throws {
         try? FileManager.default.removeItem(at: dir)

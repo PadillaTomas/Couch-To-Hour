@@ -3,7 +3,7 @@ import Foundation
 /// What to show at the bottom of the Calendar tab for the selected day — every
 /// session logged that day (there can be more than one), plus any scheduled one.
 enum CalendarDayInfo: Equatable {
-    struct Item: Equatable {
+    struct Item: Equatable, Identifiable {
         enum Status: Equatable {
             case done(durationSeconds: Int, feltRating: Int?, photoFile: String?)
             case scheduled(isToday: Bool)
@@ -13,6 +13,9 @@ enum CalendarDayInfo: Equatable {
         var groups: [SessionPlan.Group]
         var status: Status
 
+        /// Unique within a day — `CalendarDayInfo.resolve` never emits two items
+        /// for the same `(week, day)`.
+        var id: String { "W\(week)D\(day)" }
         var isDone: Bool { if case .done = status { return true } else { return false } }
     }
 
