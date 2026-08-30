@@ -174,6 +174,7 @@ enum Copy {
         static var pillToday: String { String(localized: "calendar.pillToday") }
         static var pillScheduled: String { String(localized: "calendar.pillScheduled") }
         static var nothingScheduled: String { String(localized: "calendar.nothingScheduled") }
+        static var photoUnavailable: String { String(localized: "calendar.photoUnavailable") }
     }
 
     enum Settings {

@@ -64,6 +64,7 @@ final class CalendarDayInfoTests: XCTestCase {
         XCTAssertEqual(result.count, 2)
         XCTAssertEqual(result.map { [$0.week, $0.day] }, [[1, 3], [2, 1]])
         XCTAssertTrue(result.allSatisfy(\.isDone))
+        XCTAssertEqual(Set(result.map(\.id)).count, 2, "each row needs a distinct id for the sheet")
     }
 
     func testFutureScheduledDay() throws {

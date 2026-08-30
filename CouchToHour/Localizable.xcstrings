@@ -39,6 +39,17 @@
         }
       }
     },
+    "calendar.photoUnavailable" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photo unavailable"
+          }
+        }
+      }
+    },
     "calendar.pillScheduled" : {
       "extractionState" : "manual",
       "localizations" : {

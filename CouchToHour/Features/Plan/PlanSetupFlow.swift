@@ -20,8 +20,10 @@ struct PlanSetupFlow: View {
     var includesPhilosophy = false
     var onComplete: (PlanSetup) -> Void
     var onCancel: (() -> Void)?
+    #if DEBUG
     /// DEBUG-only "skip with demo data" hook (onboarding).
     var onDebugSkip: (() -> Void)?
+    #endif
 
     @State private var mode: TrainingMode?
     @State private var startingWeekIndex = 0     // 0-based

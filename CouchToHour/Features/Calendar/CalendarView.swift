@@ -4,7 +4,8 @@ import UIKit
 import UIWorkouts
 
 /// The Calendar tab: a month grid with dots on completed / scheduled days.
-/// Tapping a day selects it and shows what that session was (or will be) below.
+/// Tapping a day selects it and lists that day's sessions as compact rows; tap a
+/// row for the full detail in a sheet.
 struct CalendarView: View {
     @Query private var settingsRows: [UserSettings]
     @Query private var plans: [WorkoutPlan]
@@ -12,9 +13,7 @@ struct CalendarView: View {
 
     @State private var monthAnchor = Date()
     @State private var selectedDate = Calendar.current.startOfDay(for: .now)
-    @State private var viewerImage: ViewerImage?
-
-    private struct ViewerImage: Identifiable { let id = UUID(); let image: UIImage }
+    @State private var openSession: CalendarDayInfo.Item?
 
     private var calendar: Calendar { .current }
 
@@ -59,8 +58,9 @@ struct CalendarView: View {
         }
         .background(WKColor.bg.ignoresSafeArea())
         .animation(.snappy, value: selectedDate)
-        .fullScreenCover(item: $viewerImage) { item in
-            PhotoViewer(image: item.image) { viewerImage = nil }
+        .sheet(item: $openSession) { item in
+            SessionDetailSheet(item: item)
+                .presentationDetents([.medium, .large])
         }
     }
 
@@ -72,9 +72,16 @@ struct CalendarView: View {
 
             switch info {
             case .sessions(let items):
-                ForEach(Array(items.enumerated()), id: \.offset) { _, item in
-                    sessionBlock(item)
+                VStack(spacing: 0) {
+                    ForEach(items) { item in
+                        if item.id != items.first?.id {
+                            Divider().overlay(WKColor.border)
+                        }
+                        sessionRow(item)
+                    }
                 }
+                .background(WKColor.surface)
+                .clipShape(RoundedRectangle(cornerRadius: WKRadius.card, style: .continuous))
             case .rest:
                 Text(Copy.Calendar.nothingScheduled)
                     .wkFont(.body).foregroundStyle(WKColor.textSecondary)
@@ -83,49 +90,39 @@ struct CalendarView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    @ViewBuilder
-    private func sessionBlock(_ item: CalendarDayInfo.Item) -> some View {
-        VStack(alignment: .leading, spacing: WKSpace.sm) {
-            HStack(alignment: .firstTextBaseline, spacing: WKSpace.md) {
+    private func sessionRow(_ item: CalendarDayInfo.Item) -> some View {
+        Button { openSession = item } label: {
+            HStack(spacing: WKSpace.sm) {
                 Text(Copy.Calendar.dayTitle(week: item.week, day: item.day))
-                    .wkFont(.titleM).foregroundStyle(WKColor.textPrimary)
-                if case .scheduled(let isToday) = item.status {
+                    .wkFont(.body)
+                    .foregroundStyle(WKColor.textPrimary)
+
+                Spacer(minLength: WKSpace.sm)
+
+                switch item.status {
+                case .done(_, let rating, let photoFile):
+                    if photoFile != nil {
+                        Image(systemName: "photo")
+                            .font(.system(size: 13))
+                            .foregroundStyle(WKColor.textTertiary)
+                    }
+                    Text(rating.map(Copy.Calendar.feltValue) ?? Copy.Calendar.statusDone)
+                        .wkFont(.body)
+                        .foregroundStyle(WKColor.textSecondary)
+                case .scheduled(let isToday):
                     WKPill(isToday ? Copy.Calendar.pillToday : Copy.Calendar.pillScheduled,
                            tone: isToday ? .run : .neutral)
                 }
-            }
-            if case .done(let seconds, let rating, let photoFile) = item.status {
-                HStack(spacing: WKSpace.xxl) {
-                    stat(Copy.Calendar.statTime, WKTimeFormat.clock(seconds))
-                    if let rating { stat(Copy.Calendar.statFelt, Copy.Calendar.feltValue(rating)) }
-                    stat(Copy.Calendar.statStatus, Copy.Calendar.statusDone)
-                }
-                if let photoFile {
-                    SessionPhoto(fileName: photoFile) { viewerImage = ViewerImage(image: $0) }
-                }
-            }
-            intervals(item.groups, done: item.isDone)
-        }
-        .padding(.top, WKSpace.xs)
-    }
 
-    private func intervals(_ groups: [SessionPlan.Group], done: Bool) -> some View {
-        VStack(alignment: .leading, spacing: WKSpace.xs) {
-            ForEach(groups) { group in
-                Text(group.line)
-                    .wkFont(.body)
-                    .monospacedDigit()
-                    .foregroundStyle(done ? WKColor.textTertiary : WKColor.textSecondary)
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(WKColor.textTertiary)
             }
+            .frame(minHeight: 52)
+            .padding(.horizontal, WKSpace.lg)
+            .contentShape(Rectangle())
         }
-        .padding(.top, WKSpace.sm)
-    }
-
-    private func stat(_ label: String, _ value: String) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(label).wkFont(.caption).foregroundStyle(WKColor.textTertiary)
-            Text(value).wkFont(.headline).foregroundStyle(WKColor.textPrimary)
-        }
+        .buttonStyle(.plain)
     }
 
     private func step(_ delta: Int) {
@@ -142,31 +139,120 @@ struct CalendarView: View {
     }
 }
 
-/// A stored session photo, decoded off the main thread. Renders nothing until
-/// the image is ready (and nothing if the file is missing).
+// MARK: - Session detail sheet
+
+/// The full breakdown of one calendar session — the content that used to sit
+/// inline in the day panel: stats, the interval list, and (last) the photo.
+private struct SessionDetailSheet: View {
+    let item: CalendarDayInfo.Item
+
+    @State private var viewerImage: ViewerImage?
+
+    private struct ViewerImage: Identifiable { let id = UUID(); let image: UIImage }
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: WKSpace.xl) {
+                HStack(alignment: .firstTextBaseline, spacing: WKSpace.md) {
+                    Text(Copy.Calendar.dayTitle(week: item.week, day: item.day))
+                        .wkFont(.titleM).foregroundStyle(WKColor.textPrimary)
+                    if case .scheduled(let isToday) = item.status {
+                        WKPill(isToday ? Copy.Calendar.pillToday : Copy.Calendar.pillScheduled,
+                               tone: isToday ? .run : .neutral)
+                    }
+                }
+
+                if case .done(let seconds, let rating, _) = item.status {
+                    HStack(spacing: WKSpace.xxl) {
+                        stat(Copy.Calendar.statTime, WKTimeFormat.clock(seconds))
+                        if let rating { stat(Copy.Calendar.statFelt, Copy.Calendar.feltValue(rating)) }
+                        stat(Copy.Calendar.statStatus, Copy.Calendar.statusDone)
+                    }
+                }
+
+                intervals(item.groups, done: item.isDone)
+
+                if case .done(_, _, let photoFile) = item.status, let photoFile {
+                    SessionPhoto(fileName: photoFile) { viewerImage = ViewerImage(image: $0) }
+                }
+            }
+            .padding(.horizontal, WKSpace.xl)
+            .padding(.top, WKSpace.xl)
+            .padding(.bottom, WKSpace.xxl)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .background(WKColor.bg.ignoresSafeArea())
+        .presentationDragIndicator(.visible)
+        .fullScreenCover(item: $viewerImage) { entry in
+            PhotoViewer(image: entry.image) { viewerImage = nil }
+        }
+    }
+
+    private func intervals(_ groups: [SessionPlan.Group], done: Bool) -> some View {
+        VStack(alignment: .leading, spacing: WKSpace.xs) {
+            ForEach(groups) { group in
+                Text(group.line)
+                    .wkFont(.body)
+                    .monospacedDigit()
+                    .foregroundStyle(done ? WKColor.textTertiary : WKColor.textSecondary)
+            }
+        }
+    }
+
+    private func stat(_ label: String, _ value: String) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(label).wkFont(.caption).foregroundStyle(WKColor.textTertiary)
+            Text(value).wkFont(.headline).foregroundStyle(WKColor.textPrimary)
+        }
+    }
+}
+
+/// A stored session photo. Shows a placeholder while loading, the image once
+/// ready, or an "unavailable" state if the file behind `fileName` can't be read.
 private struct SessionPhoto: View {
     let fileName: String
     var onTap: (UIImage) -> Void
 
     @State private var image: UIImage?
+    @State private var loaded = false
 
     var body: some View {
-        Group {
-            if let image {
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(height: 150)
-                    .frame(maxWidth: .infinity)
-                    .clipShape(RoundedRectangle(cornerRadius: WKRadius.card, style: .continuous))
-                    .contentShape(Rectangle())
-                    .onTapGesture { onTap(image) }
-                    .accessibilityLabel(Copy.PostWorkout.photoAlt)
-                    .accessibilityAddTraits(.isButton)
+        content
+            .frame(maxWidth: .infinity)
+            .task(id: fileName) {
+                image = PhotoStore.load(fileName)
+                loaded = true
             }
-        }
-        .task(id: fileName) {
-            image = await Task.detached { PhotoStore.load(fileName) }.value
+    }
+
+    @ViewBuilder private var content: some View {
+        if let image {
+            Image(uiImage: image)
+                .resizable()
+                .scaledToFill()
+                .frame(height: 200)
+                .frame(maxWidth: .infinity)
+                .clipShape(RoundedRectangle(cornerRadius: WKRadius.card, style: .continuous))
+                .contentShape(Rectangle())
+                .onTapGesture { onTap(image) }
+                .accessibilityLabel(Copy.PostWorkout.photoAlt)
+                .accessibilityAddTraits(.isButton)
+        } else if loaded {
+            HStack(spacing: WKSpace.sm) {
+                Image(systemName: "photo")
+                Text(Copy.Calendar.photoUnavailable)
+            }
+            .wkFont(.caption)
+            .foregroundStyle(WKColor.textTertiary)
+            .frame(maxWidth: .infinity)
+            .frame(height: 64)
+            .background(WKColor.surface)
+            .clipShape(RoundedRectangle(cornerRadius: WKRadius.card, style: .continuous))
+        } else {
+            RoundedRectangle(cornerRadius: WKRadius.card, style: .continuous)
+                .fill(WKColor.surface)
+                .frame(height: 200)
+                .overlay(ProgressView())
         }
     }
 }

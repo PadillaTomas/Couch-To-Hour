@@ -41,7 +41,11 @@ enum PhotoStore {
     }
 
     static func load(_ fileName: String, in directory: URL = PhotoStore.directory) -> UIImage? {
-        UIImage(contentsOfFile: url(for: fileName, in: directory).path)
+        // URL-based, not `UIImage(contentsOfFile:)` — `Application Support` has a
+        // space that the modern URL API percent-encodes into `.path`, which
+        // `contentsOfFile:` then can't resolve.
+        guard let data = try? Data(contentsOf: url(for: fileName, in: directory)) else { return nil }
+        return UIImage(data: data)
     }
 
     static func delete(_ fileName: String, in directory: URL = PhotoStore.directory) {
