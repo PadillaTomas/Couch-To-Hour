@@ -28,6 +28,15 @@ struct SettingsView: View {
             VStack(alignment: .leading, spacing: WKSpace.xl) {
                 WKScreenHeader(title: Copy.Settings.title)
 
+                VStack(alignment: .leading, spacing: WKSpace.md) {
+                    WKSectionHeader(Copy.Settings.appearance)
+                    WKThemePicker(selection: appearanceBinding, options: [
+                        (.system, Copy.Settings.appearanceSystem),
+                        (.light, Copy.Settings.appearanceLight),
+                        (.dark, Copy.Settings.appearanceDark),
+                    ])
+                }
+
                 VStack(alignment: .leading, spacing: WKSpace.xs) {
                     WKInsetGroup(header: Copy.Settings.plan) {
                         WKNavRow(Copy.Settings.trainingPlanRow,
@@ -116,6 +125,16 @@ struct SettingsView: View {
         .padding(.top, WKSpace.sm)
         .padding(.bottom, WKSpace.xxl)   // separation from the tab bar
         .background(WKColor.bg)
+    }
+
+    private var appearanceBinding: Binding<WKAppearance> {
+        Binding(
+            get: { settings.first?.appearance ?? .dark },
+            set: {
+                UserSettings.current(in: modelContext).appearance = $0
+                modelContext.saveChanges("appearance")
+            }
+        )
     }
 
     private var dimAudioBinding: Binding<Bool> {

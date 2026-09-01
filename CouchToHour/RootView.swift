@@ -4,8 +4,9 @@ import UIWorkouts
 import UserNotifications
 
 /// The app root: runs onboarding until it's completed, then the tab shell.
-/// UIWorkouts is a single dark appearance — pinned here so the system chrome
-/// matches.
+/// Appearance follows the user's `Settings ▸ Appearance` choice (`system` /
+/// `light` / `dark`), pinned here so the system chrome matches; defaults to
+/// dark, UIWorkouts' primary theme.
 struct RootView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var settings: [UserSettings]
@@ -35,7 +36,7 @@ struct RootView: View {
             }
         }
         .tint(WKColor.accent)
-        .preferredColorScheme(.dark)
+        .preferredColorScheme((current?.appearance ?? .dark).colorScheme)
         .task(id: reminderStateKey) {
             // Runs on launch and whenever the desired set moves. Reconcile also
             // covers the "clear everything" cases (toggle off, Free mode, a

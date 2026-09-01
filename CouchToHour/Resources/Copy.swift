@@ -210,6 +210,10 @@ enum Copy {
 
     enum Settings {
         static var title: String { String(localized: "settings.title") }
+        static var appearance: String { String(localized: "settings.appearance") }
+        static var appearanceSystem: String { String(localized: "settings.appearance.system") }
+        static var appearanceLight: String { String(localized: "settings.appearance.light") }
+        static var appearanceDark: String { String(localized: "settings.appearance.dark") }
         static var plan: String { String(localized: "settings.plan") }
         static var trainingPlanRow: String { String(localized: "settings.trainingPlanRow") }
         static var trainingPlanValue: String { String(localized: "settings.trainingPlanValue") }

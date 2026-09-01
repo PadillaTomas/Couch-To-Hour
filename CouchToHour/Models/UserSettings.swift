@@ -1,5 +1,6 @@
 import Foundation
 import SwiftData
+import UIWorkouts
 
 /// Which way the user runs the plan.
 enum TrainingMode: String, CaseIterable, Sendable {
@@ -11,9 +12,7 @@ enum TrainingMode: String, CaseIterable, Sendable {
 
 /// Single-row app settings — the mode / schedule fields the plan engine needs.
 /// All fields are defaulted so SwiftData lightweight migration adds them to an
-/// older store cleanly. (The former `themeModeRaw` appearance field was dropped
-/// when UIWorkouts moved to a single dark appearance — migration drops the
-/// column.)
+/// older store cleanly.
 @Model
 final class UserSettings {
     /// Raw value of the selected ``TrainingMode``. Read through ``mode``.
@@ -51,6 +50,12 @@ final class UserSettings {
     /// Placeholder for MVP+ local reminders. Unused in Step 1.
     var notificationsEnabled: Bool = false
 
+    /// Raw value of the selected ``WKAppearance``. Read through ``appearance``.
+    /// Defaults to `dark` — UIWorkouts' primary theme and what every build before
+    /// the switcher shipped — so an older store migrates in unchanged. A device
+    /// preference, not workout data — kept across a reset.
+    var themeModeRaw: String = WKAppearance.dark.rawValue
+
     /// Briefly dip other apps' audio (music, podcasts) under each timer cue so
     /// the click is audible over it. Off = cues layer on top at full volume.
     /// A device preference, not workout data — kept across a reset.
@@ -81,6 +86,12 @@ final class UserSettings {
     var mode: TrainingMode {
         get { TrainingMode(rawValue: modeRaw) ?? .threeDay }
         set { modeRaw = newValue.rawValue }
+    }
+
+    /// Selected appearance. `system` follows the device; `light` / `dark` pin it.
+    var appearance: WKAppearance {
+        get { WKAppearance(rawValue: themeModeRaw) ?? .dark }
+        set { themeModeRaw = newValue.rawValue }
     }
 
     /// Puts every plan/schedule field back to its first-run default and re-arms
