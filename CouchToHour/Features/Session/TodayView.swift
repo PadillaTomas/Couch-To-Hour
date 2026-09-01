@@ -20,13 +20,18 @@ struct TodayView: View {
         /// `fast` compresses the plan to a few seconds per phase — DEBUG only,
         /// for walking the screen flow without waiting out real durations.
         /// `resume` picks up a persisted in-progress session for this day.
+        ///
+        /// Timer → rating is one uninterrupted cover: ``SessionFlowView`` swaps
+        /// its own content when the session finishes, so the Today screen behind
+        /// never renders between the two.
         case timer(WorkoutDay, key: SessionKey, fast: Bool, resume: Bool)
-        case rating(CompletionRecord, WorkoutDay)
+        /// Mark-done path — no timer, straight to the rating screen.
+        case rating(PostWorkoutInput)
         var id: String {
             switch self {
             case .timer(let d, let key, let fast, let resume):
                 return "timer-\(d.persistentModelID.hashValue)-\(key.week)-\(key.day)-\(key.makeup)-\(fast)-\(resume)"
-            case .rating(let r, _): return "rating-\(r.persistentModelID.hashValue)"
+            case .rating(let input): return "rating-\(input.record.persistentModelID.hashValue)"
             }
         }
     }
@@ -48,20 +53,19 @@ struct TodayView: View {
         .fullScreenCover(item: $flow) { flow in
             switch flow {
             case .timer(let day, let key, let fast, let resume):
-                TimerView(
+                SessionFlowView(
                     plan: fast ? .fastTest : SessionPlan(day: day),
                     key: key,
                     resume: resume ? SessionResumeStore.load() : nil,
                     dimsOtherAudio: settings?.dimOtherAudioDuringCues ?? true,
-                    onFinish: { elapsed in finish(day, elapsedSeconds: elapsed) },
-                    onExit: { self.flow = nil }
+                    finish: { elapsed in finish(day, elapsedSeconds: elapsed) },
+                    onClose: { self.flow = nil }
                 )
-            case .rating(let record, let day):
+            case .rating(let input):
                 PostWorkoutView(
-                    record: record,
-                    runIntervals: SessionPlan(day: day).phases.filter { $0.phase == .run }.count,
-                    weekSessionsDone: (planState?.planCompletions ?? [])
-                        .filter { $0.workoutCoordinate?.week == day.week?.number }.count,
+                    record: input.record,
+                    runIntervals: input.runIntervals,
+                    weekSessionsDone: input.weekSessionsDone,
                     onDone: { self.flow = nil })
             }
         }
@@ -188,15 +192,29 @@ struct TodayView: View {
         let record = DoneDetection.markComplete(day, on: .now, in: context)
         context.saveChanges("session marked done")
         missedPick = nil
-        if let record { flow = .rating(record, day) }
+        if let input = ratingInput(day, record: record) { flow = .rating(input) }
     }
 
-    private func finish(_ day: WorkoutDay, elapsedSeconds: Int) {
+    /// Logs the finished session and returns the rating input for
+    /// ``SessionFlowView`` to swap in place — the timer cover is never dismissed,
+    /// so the Today screen behind it never shows through.
+    private func finish(_ day: WorkoutDay, elapsedSeconds: Int) -> PostWorkoutInput? {
         let record = DoneDetection.markComplete(day, on: .now,
                                                 durationSeconds: elapsedSeconds, in: context)
         context.saveChanges("session finished")
         missedPick = nil
-        flow = record.map { .rating($0, day) }
+        return ratingInput(day, record: record)
+    }
+
+    /// Bundles what ``PostWorkoutView`` needs, read *after* the record is saved
+    /// so the week-session count includes it.
+    private func ratingInput(_ day: WorkoutDay, record: CompletionRecord?) -> PostWorkoutInput? {
+        guard let record else { return nil }
+        return PostWorkoutInput(
+            record: record,
+            runIntervals: SessionPlan(day: day).phases.filter { $0.phase == .run }.count,
+            weekSessionsDone: (planState?.planCompletions ?? [])
+                .filter { $0.workoutCoordinate?.week == day.week?.number }.count)
     }
 
     // MARK: Helpers
@@ -205,6 +223,55 @@ struct TodayView: View {
         plan.phases.enumerated().map { index, phase in
             WKTrackSegment(id: index, weight: Double(phase.seconds),
                            progress: .upcoming, phase: phase.phase)
+        }
+    }
+}
+
+/// Everything ``PostWorkoutView`` needs, captured once the `CompletionRecord`
+/// is written.
+struct PostWorkoutInput: Identifiable {
+    let record: CompletionRecord
+    let runIntervals: Int
+    let weekSessionsDone: Int
+    var id: PersistentIdentifier { record.persistentModelID }
+}
+
+/// Hosts the running session and the post-workout rating in a **single**
+/// `fullScreenCover`. When the timer finishes it swaps `TimerView` for
+/// `PostWorkoutView` in place — the cover stays up the whole time, so the Today
+/// screen behind never renders between the two.
+private struct SessionFlowView: View {
+    let plan: SessionPlan
+    let key: SessionKey
+    var resume: InProgressSession?
+    var dimsOtherAudio: Bool
+    /// Writes the `CompletionRecord`. `nil` → nothing to rate, just close.
+    var finish: (_ elapsedSeconds: Int) -> PostWorkoutInput?
+    var onClose: () -> Void
+
+    @State private var rated: PostWorkoutInput?
+
+    var body: some View {
+        ZStack {
+            WKColor.bg.ignoresSafeArea()
+            if let rated {
+                PostWorkoutView(record: rated.record,
+                                runIntervals: rated.runIntervals,
+                                weekSessionsDone: rated.weekSessionsDone,
+                                onDone: onClose)
+            } else {
+                TimerView(
+                    plan: plan,
+                    key: key,
+                    resume: resume,
+                    dimsOtherAudio: dimsOtherAudio,
+                    onFinish: { elapsed in
+                        if let input = finish(elapsed) { rated = input }
+                        else { onClose() }
+                    },
+                    onExit: onClose
+                )
+            }
         }
     }
 }
