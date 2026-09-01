@@ -68,6 +68,25 @@ final class SessionTimerModel {
         return Double(total - secondsLeftInSegment) / Double(total)
     }
 
+    /// The phase after the current one, or `nil` if this is the last.
+    var nextSegment: SessionPlan.Phase? {
+        let next = segmentIndex + 1
+        return plan.phases.indices.contains(next) ? plan.phases[next] : nil
+    }
+
+    /// Seconds left across the whole session (current phase + everything after).
+    var totalSecondsLeft: Int {
+        max(0, plan.totalSeconds - elapsedSeconds)
+    }
+
+    /// Which run interval the runner is on, e.g. `(5, 10)` — "5 of 10". `done`
+    /// counts run phases up to and including the current segment.
+    var runIntervalProgress: (done: Int, total: Int) {
+        let total = plan.phases.filter { $0.phase == .run }.count
+        let done = plan.phases.prefix(segmentIndex + 1).filter { $0.phase == .run }.count
+        return (min(done, total), total)
+    }
+
     /// Seconds elapsed across the whole session.
     var elapsedSeconds: Int {
         let before = plan.phases.prefix(segmentIndex).reduce(0) { $0 + $1.seconds }

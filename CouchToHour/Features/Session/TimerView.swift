@@ -2,8 +2,8 @@ import SwiftUI
 import UIWorkouts
 
 /// The running-session screen: the ``WKTimerDial`` counting down the current
-/// phase on the app's calm background, with a soft phase-coloured halo behind
-/// it. Calls back when the session finishes or the user ends it.
+/// phase over a ``WKAmbientBackground`` tinted to the phase. Calls back when the
+/// session finishes or the user ends it.
 struct TimerView: View {
     let plan: SessionPlan
     /// Which plan session this is — the key the resume snapshot is stored under.
@@ -45,37 +45,53 @@ struct TimerView: View {
     var body: some View {
         ZStack {
             WKColor.bg.ignoresSafeArea()
+            WKAmbientBackground(phase: model.currentSegment.phase)
 
-            RadialGradient(
-                gradient: Gradient(colors: [
-                    model.currentSegment.phase.color.opacity(model.state == .paused ? 0.05 : 0.13),
-                    .clear,
-                ]),
-                center: .center, startRadius: 8, endRadius: 340
-            )
-            .ignoresSafeArea()
-            .animation(.easeInOut(duration: 0.4), value: model.segmentIndex)
+            VStack(spacing: 0) {
+                header
+                    .padding(.horizontal, WKSpace.lg)
+                    .padding(.top, WKSpace.sm)
 
-            WKTimerDial(
-                fraction: model.segmentFraction,
-                phase: model.currentSegment.phase,
-                caption: model.currentSegment.phase == .run
-                    ? Copy.Timer.runCaption
-                    : Copy.Timer.walkCaption,
-                seconds: model.secondsLeftInSegment,
-                state: dialState
-            )
-            .frame(width: 300, height: 300)
-            .padding(WKSpace.lg)
+                Spacer(minLength: WKSpace.lg)
+
+                WKTimerDial(
+                    fraction: model.segmentFraction,
+                    phase: model.currentSegment.phase,
+                    caption: model.currentSegment.phase == .run
+                        ? Copy.Timer.runCaption
+                        : Copy.Timer.walkCaption,
+                    seconds: model.secondsLeftInSegment,
+                    state: dialState
+                )
+                .frame(width: 300, height: 300)
+                .frame(maxWidth: .infinity)
+
+                Text(model.currentSegment.phase == .run
+                     ? Copy.Timer.runGuide : Copy.Timer.walkGuide)
+                    .wkFont(.displayS)
+                    .foregroundStyle(WKColor.textPrimary)
+                    .padding(.top, WKSpace.xxl)
+
+                Spacer(minLength: WKSpace.lg)
+
+                if model.state != .finished {
+                    upNext
+                        .padding(.horizontal, WKSpace.lg)
+                    WKSegmentedTrack(segments: trackSegments)
+                        .padding(.horizontal, WKSpace.lg)
+                        .padding(.top, WKSpace.sm)
+                        .padding(.bottom, WKSpace.lg)
+                }
+            }
         }
         .safeAreaInset(edge: .bottom) {
             if model.state != .finished {
                 WKFooterActions {
                     WKButton(model.state == .paused ? Copy.Timer.resume : Copy.Timer.pause,
-                             style: .softPhase(model.currentSegment.phase)) {
+                             style: .primary) {
                         model.togglePause()
                     }
-                    WKButton(Copy.Timer.endSession, style: .quiet) { showExitConfirm = true }
+                    WKButton(Copy.Timer.endSession, style: .secondary) { showExitConfirm = true }
                 }
             }
         }
@@ -113,6 +129,42 @@ struct TimerView: View {
             Button(Copy.Timer.endConfirmCancel, role: .cancel) {}
         } message: {
             Text(Copy.Timer.endConfirmBody)
+        }
+    }
+
+    private var header: some View {
+        HStack {
+            Text(Copy.Today.dayTitle(week: key.week, day: key.day))
+                .wkFont(.body)
+                .foregroundStyle(WKColor.textSecondary)
+            Spacer()
+            let progress = model.runIntervalProgress
+            WKPill(Copy.Format.ofCount(progress.done, progress.total),
+                   tone: model.currentSegment.phase == .run ? .run : .walk)
+        }
+    }
+
+    private var upNext: some View {
+        HStack {
+            if let next = model.nextSegment {
+                Text(Copy.Timer.nextUp(phase: next.phase.label.lowercased(),
+                                       clock: WKTimeFormat.clock(next.seconds)))
+            }
+            Spacer()
+            Text(Copy.Timer.timeLeft(WKTimeFormat.clock(model.totalSecondsLeft)))
+                .monospacedDigit()
+        }
+        .wkFont(.callout)
+        .foregroundStyle(WKColor.textSecondary)
+    }
+
+    private var trackSegments: [WKTrackSegment] {
+        model.plan.phases.enumerated().map { index, phase in
+            let progress: WKTrackSegment.Progress =
+                index < model.segmentIndex ? .done
+                : (index == model.segmentIndex ? .current : .upcoming)
+            return WKTrackSegment(id: index, weight: Double(phase.seconds),
+                                  progress: progress, phase: phase.phase)
         }
     }
 

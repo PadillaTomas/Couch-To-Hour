@@ -21,12 +21,12 @@ struct TodayView: View {
         /// for walking the screen flow without waiting out real durations.
         /// `resume` picks up a persisted in-progress session for this day.
         case timer(WorkoutDay, key: SessionKey, fast: Bool, resume: Bool)
-        case rating(CompletionRecord)
+        case rating(CompletionRecord, WorkoutDay)
         var id: String {
             switch self {
             case .timer(let d, let key, let fast, let resume):
                 return "timer-\(d.persistentModelID.hashValue)-\(key.week)-\(key.day)-\(key.makeup)-\(fast)-\(resume)"
-            case .rating(let r): return "rating-\(r.persistentModelID.hashValue)"
+            case .rating(let r, _): return "rating-\(r.persistentModelID.hashValue)"
             }
         }
     }
@@ -56,8 +56,13 @@ struct TodayView: View {
                     onFinish: { elapsed in finish(day, elapsedSeconds: elapsed) },
                     onExit: { self.flow = nil }
                 )
-            case .rating(let record):
-                PostWorkoutView(record: record, onDone: { self.flow = nil })
+            case .rating(let record, let day):
+                PostWorkoutView(
+                    record: record,
+                    runIntervals: SessionPlan(day: day).phases.filter { $0.phase == .run }.count,
+                    weekSessionsDone: (planState?.planCompletions ?? [])
+                        .filter { $0.workoutCoordinate?.week == day.week?.number }.count,
+                    onDone: { self.flow = nil })
             }
         }
     }
@@ -183,7 +188,7 @@ struct TodayView: View {
         let record = DoneDetection.markComplete(day, on: .now, in: context)
         context.saveChanges("session marked done")
         missedPick = nil
-        if let record { flow = .rating(record) }
+        if let record { flow = .rating(record, day) }
     }
 
     private func finish(_ day: WorkoutDay, elapsedSeconds: Int) {
@@ -191,7 +196,7 @@ struct TodayView: View {
                                                 durationSeconds: elapsedSeconds, in: context)
         context.saveChanges("session finished")
         missedPick = nil
-        flow = record.map(Flow.rating)
+        flow = record.map { .rating($0, day) }
     }
 
     // MARK: Helpers

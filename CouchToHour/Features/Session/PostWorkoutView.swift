@@ -11,10 +11,18 @@ import UIWorkouts
 /// created.
 struct PostWorkoutView: View {
     let record: CompletionRecord
+    /// Run intervals in the completed day (all held, since we only get here on a
+    /// finished / marked-done session).
+    let runIntervals: Int
+    /// Sessions done so far this plan-week, including this one.
+    let weekSessionsDone: Int
     var onDone: () -> Void
 
     @Environment(\.modelContext) private var context
     @State private var rating = 6
+
+    private var coord: (week: Int, day: Int) { record.workoutCoordinate ?? (0, 0) }
+    private var minutes: Int { record.durationSeconds / 60 }
 
     @State private var photoItem: PhotosPickerItem?
     /// The pick, held until the runner taps Save.
@@ -34,11 +42,33 @@ struct PostWorkoutView: View {
             WKColor.bg.ignoresSafeArea()
             ScrollView {
                 VStack(alignment: .leading, spacing: WKSpace.xl) {
-                    WKScreenHeader(eyebrow: Copy.PostWorkout.eyebrow,
-                                   title: Copy.PostWorkout.title,
-                                   body: Copy.PostWorkout.body)
-                    WKScaleSelector(range: 1...10, selection: $rating,
-                                    endLabels: (Copy.PostWorkout.easyLabel, Copy.PostWorkout.hardLabel))
+                    WKScreenHeader(
+                        eyebrow: Copy.PostWorkout.eyebrow(week: coord.week, day: coord.day),
+                        title: Copy.PostWorkout.title(intervals: runIntervals),
+                        body: Copy.PostWorkout.summary(minutes: minutes, intervals: runIntervals))
+
+                    VStack(alignment: .leading, spacing: WKSpace.md) {
+                        Text(Copy.PostWorkout.feelPrompt)
+                            .wkFont(.headline)
+                            .foregroundStyle(WKColor.textPrimary)
+                        WKScaleSelector(
+                            range: 1...10, selection: $rating,
+                            endLabels: (Copy.PostWorkout.easyLabel, Copy.PostWorkout.hardLabel),
+                            maxPerRow: 5)
+                    }
+
+                    WKCard {
+                        VStack(spacing: WKSpace.md) {
+                            WKMetricRow(title: Copy.PostWorkout.intervalsHeld,
+                                        value: Copy.Format.ofCount(runIntervals, runIntervals),
+                                        fraction: 1)
+                            WKMetricRow(title: Copy.PostWorkout.weekSessions(coord.week),
+                                        value: Copy.Format.ofCount(weekSessionsDone, 3),
+                                        fraction: min(1, Double(weekSessionsDone) / 3),
+                                        tint: WKPhase.walk.color)
+                        }
+                    }
+
                     photoSection
                 }
                 .padding(WKSpace.lg)
@@ -51,11 +81,12 @@ struct PostWorkoutView: View {
                 WKButton(Copy.PostWorkout.skip, style: .quiet) { onDone() }
             }
         }
-        .confirmationDialog("", isPresented: $showSourceDialog, titleVisibility: .hidden) {
+        .alert(Copy.PostWorkout.addPhoto, isPresented: $showSourceDialog) {
             if cameraAvailable {
                 Button(Copy.PostWorkout.takePhoto) { requestCamera() }
             }
             Button(Copy.PostWorkout.chooseFromLibrary) { showLibraryPicker = true }
+            Button(Copy.PostWorkout.notNow, role: .cancel) {}
         }
         .photosPicker(isPresented: $showLibraryPicker, selection: $photoItem, matching: .images)
         .fullScreenCover(isPresented: $showCamera) {
@@ -155,7 +186,9 @@ struct PostWorkoutView: View {
 
 #Preview {
     PostWorkoutView(
-        record: CompletionRecord(date: .now, workoutDayKey: "W1D1", durationSeconds: 1200),
+        record: CompletionRecord(date: .now, workoutDayKey: "W2D1", durationSeconds: 1320),
+        runIntervals: 5,
+        weekSessionsDone: 1,
         onDone: {}
     )
     .modelContainer(for: UserSettings.self, inMemory: true)

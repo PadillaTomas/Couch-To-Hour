@@ -192,4 +192,36 @@ final class SessionTimerModelTests: XCTestCase {
         XCTAssertEqual(model.segmentIndex, 0)
         XCTAssertEqual(model.secondsLeftInSegment, 5)
     }
+
+    // MARK: Timer-screen readouts
+
+    func testNextSegmentAndTimeLeft() {
+        let model = SessionTimerModel(plan: plan([(.run, 60), (.walk, 90), (.run, 60)]))
+        XCTAssertEqual(model.nextSegment?.phase, .walk)
+        XCTAssertEqual(model.nextSegment?.seconds, 90)
+        XCTAssertEqual(model.totalSecondsLeft, 210)
+
+        tick(model, 60)   // into the walk
+        XCTAssertEqual(model.nextSegment?.phase, .run)
+        XCTAssertEqual(model.totalSecondsLeft, 150)
+
+        tick(model, 90 + 60)   // finished
+        XCTAssertNil(model.nextSegment)
+        XCTAssertEqual(model.totalSecondsLeft, 0)
+    }
+
+    func testRunIntervalProgress() {
+        // run / walk × 3
+        let model = SessionTimerModel(plan: plan([
+            (.run, 10), (.walk, 5), (.run, 10), (.walk, 5), (.run, 10), (.walk, 5),
+        ]))
+        XCTAssertEqual(model.runIntervalProgress.total, 3)
+        XCTAssertEqual(model.runIntervalProgress.done, 1)   // on run #1
+
+        tick(model, 10)   // into walk after run #1 — still "1 of 3"
+        XCTAssertEqual(model.runIntervalProgress.done, 1)
+
+        tick(model, 5)    // into run #2
+        XCTAssertEqual(model.runIntervalProgress.done, 2)
+    }
 }

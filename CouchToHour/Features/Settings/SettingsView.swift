@@ -4,9 +4,7 @@ import UIKit
 import UIWorkouts
 import UserNotifications
 
-/// Settings screen: the theme picker bound to the persisted `UserSettings`, plus
-/// placeholder nav rows for options that later modules fill in, and a full
-/// reset.
+/// Settings screen: plan / audio / reminder groups and a full reset.
 struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var settings: [UserSettings]
@@ -30,52 +28,28 @@ struct SettingsView: View {
             VStack(alignment: .leading, spacing: WKSpace.xl) {
                 WKScreenHeader(title: Copy.Settings.title)
 
-                VStack(alignment: .leading, spacing: WKSpace.md) {
-                    WKSectionHeader(Copy.Settings.appearance)
-                    WKThemePicker(selection: themeBinding)
-                }
-
                 VStack(alignment: .leading, spacing: WKSpace.xs) {
-                    WKSectionHeader(Copy.Settings.plan)
-                    VStack(spacing: 0) {
-                        WKNavRow(Copy.Settings.trainingPlanRow, value: Copy.Settings.modeName(mode)) {
+                    WKInsetGroup(header: Copy.Settings.plan) {
+                        WKNavRow(Copy.Settings.trainingPlanRow,
+                                 value: Copy.Settings.modeName(mode)) {
                             showSetupAlert = true
                         }
-                        Divider().overlay(WKColor.border)
                         WKNavRow(Copy.Settings.scheduleRow, value: scheduleValue) {
                             showSetupAlert = true
                         }
                     }
-                    .background(WKColor.surface)
-                    .clipShape(RoundedRectangle(cornerRadius: WKRadius.card, style: .continuous))
                     SeeAllWorkoutsLink(showsProgress: true)
                 }
 
-                VStack(alignment: .leading, spacing: WKSpace.md) {
-                    WKSectionHeader(Copy.Settings.audio)
-                    VStack(spacing: 0) {
-                        WKToggleRow(Copy.Settings.dimOtherAudio, isOn: dimAudioBinding)
-                    }
-                    .background(WKColor.surface)
-                    .clipShape(RoundedRectangle(cornerRadius: WKRadius.card, style: .continuous))
-                    Text(Copy.Settings.dimOtherAudioCaption)
-                        .wkFont(.caption)
-                        .foregroundStyle(WKColor.textTertiary)
-                        .fixedSize(horizontal: false, vertical: true)
+                WKInsetGroup(header: Copy.Settings.audio,
+                             footer: Copy.Settings.dimOtherAudioCaption) {
+                    WKToggleRow(Copy.Settings.dimOtherAudio, isOn: dimAudioBinding)
                 }
 
                 if mode == .threeDay {
-                    VStack(alignment: .leading, spacing: WKSpace.md) {
-                        WKSectionHeader(Copy.Settings.reminders)
-                        VStack(spacing: 0) {
-                            WKToggleRow(Copy.Settings.remindersToggle, isOn: remindersBinding)
-                        }
-                        .background(WKColor.surface)
-                        .clipShape(RoundedRectangle(cornerRadius: WKRadius.card, style: .continuous))
-                        Text(Copy.Settings.remindersCaption)
-                            .wkFont(.caption)
-                            .foregroundStyle(WKColor.textTertiary)
-                            .fixedSize(horizontal: false, vertical: true)
+                    WKInsetGroup(header: Copy.Settings.reminders,
+                                 footer: Copy.Settings.remindersCaption) {
+                        WKToggleRow(Copy.Settings.remindersToggle, isOn: remindersBinding)
                     }
                 }
 
@@ -142,13 +116,6 @@ struct SettingsView: View {
         .padding(.top, WKSpace.sm)
         .padding(.bottom, WKSpace.xxl)   // separation from the tab bar
         .background(WKColor.bg)
-    }
-
-    private var themeBinding: Binding<WKThemeMode> {
-        Binding(
-            get: { settings.first?.themeMode ?? .system },
-            set: { UserSettings.current(in: modelContext).themeMode = $0 }
-        )
     }
 
     private var dimAudioBinding: Binding<Bool> {

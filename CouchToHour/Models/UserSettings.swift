@@ -1,6 +1,5 @@
 import Foundation
 import SwiftData
-import UIWorkouts
 
 /// Which way the user runs the plan.
 enum TrainingMode: String, CaseIterable, Sendable {
@@ -10,16 +9,13 @@ enum TrainingMode: String, CaseIterable, Sendable {
     case free
 }
 
-/// Single-row app settings. CTH-4 added the appearance choice; CTH-5 adds the
-/// mode / schedule fields the engine needs. All new fields are defaulted so the
-/// first-launch row and the CTH-4 store both migrate cleanly.
+/// Single-row app settings — the mode / schedule fields the plan engine needs.
+/// All fields are defaulted so SwiftData lightweight migration adds them to an
+/// older store cleanly. (The former `themeModeRaw` appearance field was dropped
+/// when UIWorkouts moved to a single dark appearance — migration drops the
+/// column.)
 @Model
 final class UserSettings {
-    /// Raw value of the selected ``WKThemeMode``. Stored as `String` so the
-    /// persisted store never depends on a UIWorkouts type. Read/written through
-    /// ``themeMode``.
-    var themeModeRaw: String
-
     /// Raw value of the selected ``TrainingMode``. Read through ``mode``.
     /// Defaults are declared here (not just in `init`) so SwiftData lightweight
     /// migration can add these columns to the existing CTH-4 store.
@@ -64,8 +60,7 @@ final class UserSettings {
     /// goes straight to the app.
     var onboardingCompleted: Bool = false
 
-    init(themeMode: WKThemeMode = .system,
-         mode: TrainingMode = .threeDay,
+    init(mode: TrainingMode = .threeDay,
          startWeekday: Int = 2,
          startingWeek: Int = 1,
          startDate: Date? = nil,
@@ -73,7 +68,6 @@ final class UserSettings {
          notificationsEnabled: Bool = false,
          dimOtherAudioDuringCues: Bool = true,
          onboardingCompleted: Bool = false) {
-        self.themeModeRaw = themeMode.rawValue
         self.modeRaw = mode.rawValue
         self.startWeekday = startWeekday
         self.startingWeek = startingWeek
@@ -84,20 +78,13 @@ final class UserSettings {
         self.onboardingCompleted = onboardingCompleted
     }
 
-    /// Computed — the `@Model` macro leaves it out of the persisted schema.
-    var themeMode: WKThemeMode {
-        get { WKThemeMode(rawValue: themeModeRaw) ?? .system }
-        set { themeModeRaw = newValue.rawValue }
-    }
-
     var mode: TrainingMode {
         get { TrainingMode(rawValue: modeRaw) ?? .threeDay }
         set { modeRaw = newValue.rawValue }
     }
 
     /// Puts every plan/schedule field back to its first-run default and re-arms
-    /// the onboarding gate. The appearance theme is deliberately kept — it isn't
-    /// workout data.
+    /// the onboarding gate.
     func resetToFirstRun() {
         mode = .threeDay
         startWeekday = 2
