@@ -69,12 +69,14 @@ struct OnboardingStartingWeekStep: View {
     }
 }
 
-/// Re-run setup: "continue where you left off" or pick a specific week + day.
+/// Re-run setup: start from the beginning, or pick a specific workout from the
+/// plan browser.
 struct StartingPointStep: View {
-    let continueCoord: PlanSetupFlow.Coord?
     @Binding var pickSpecific: Bool
     @Binding var weekIndex: Int
     @Binding var dayIndex: Int
+
+    @State private var showBrowser = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: WKSpace.sm) {
@@ -82,32 +84,22 @@ struct StartingPointStep: View {
 
             SeeAllWorkoutsLink()
 
-            if let c = continueCoord {
-                WKChoiceCard(title: Copy.PlanSetup.continueTitle,
-                             body: Copy.PlanSetup.coord(week: c.week, day: c.day),
-                             isSelected: !pickSpecific) { pickSpecific = false }
-            }
-            WKChoiceCard(title: Copy.PlanSetup.pickTitle,
-                         isSelected: pickSpecific || continueCoord == nil) { pickSpecific = true }
+            WKChoiceCard(title: Copy.PlanSetup.fromBeginningTitle,
+                         body: Copy.PlanSetup.fromBeginningBody,
+                         isSelected: !pickSpecific) { pickSpecific = false }
 
-            if pickSpecific || continueCoord == nil {
-                VStack(spacing: WKSpace.sm) {
-                    ForEach(Array(Copy.Onboarding.weekBlurbs.enumerated()), id: \.offset) { index, blurb in
-                        WKChoiceCard(title: Copy.Onboarding.weekLabel(index + 1),
-                                     body: blurb,
-                                     isSelected: index == weekIndex,
-                                     compact: true) { weekIndex = index }
-                    }
-                }
-                .padding(.top, WKSpace.xs)
-
-                HStack(spacing: WKSpace.sm) {
-                    ForEach(0..<3, id: \.self) { index in
-                        WKChoiceCard(title: Copy.PlanSetup.dayLabel(index + 1),
-                                     isSelected: index == dayIndex,
-                                     compact: true) { dayIndex = index }
-                    }
-                }
+            WKChoiceCard(title: Copy.PlanSetup.fromSpecificTitle,
+                         body: pickSpecific
+                             ? Copy.PlanSetup.coord(week: weekIndex + 1, day: dayIndex + 1)
+                             : Copy.PlanSetup.fromSpecificBody,
+                         isSelected: pickSpecific) { showBrowser = true }
+        }
+        .sheet(isPresented: $showBrowser) {
+            PlanOverviewView(showsProgress: true) { week, day in
+                weekIndex = week - 1
+                dayIndex = day - 1
+                pickSpecific = true
+                showBrowser = false
             }
         }
     }
@@ -131,11 +123,9 @@ struct StartDateStep: View {
             case .free:
                 WKScreenHeader(title: Copy.PlanSetup.freeDateTitle,
                                body: Copy.PlanSetup.freeDateBody)
-                VStack(spacing: 0) {
+                WKInsetGroup {
                     WKToggleRow(Copy.PlanSetup.freeDateToggle, isOn: $isSet)
                 }
-                .background(WKColor.surface)
-                .clipShape(RoundedRectangle(cornerRadius: WKRadius.card, style: .continuous))
                 if isSet { datePicker }
             }
         }

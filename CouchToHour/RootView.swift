@@ -3,8 +3,9 @@ import SwiftUI
 import UIWorkouts
 import UserNotifications
 
-/// The app root: runs onboarding until it's completed, then the tab shell. The
-/// persisted theme is applied exactly once, here.
+/// The app root: runs onboarding until it's completed, then the tab shell.
+/// UIWorkouts is a single dark appearance — pinned here so the system chrome
+/// matches.
 struct RootView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var settings: [UserSettings]
@@ -34,7 +35,7 @@ struct RootView: View {
             }
         }
         .tint(WKColor.accent)
-        .wkThemeMode(current?.themeMode ?? .system)
+        .preferredColorScheme(.dark)
         .task(id: reminderStateKey) {
             // Runs on launch and whenever the desired set moves. Reconcile also
             // covers the "clear everything" cases (toggle off, Free mode, a

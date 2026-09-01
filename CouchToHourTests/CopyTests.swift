@@ -34,14 +34,23 @@ final class CopyTests: XCTestCase {
             Copy.Timer.runCaption, Copy.Timer.walkCaption, Copy.Timer.pause, Copy.Timer.resume,
             Copy.Timer.endSession, Copy.Timer.endConfirmTitle, Copy.Timer.endConfirmConfirm,
             Copy.Timer.endConfirmCancel, Copy.Timer.endConfirmBody,
+            Copy.Timer.runGuide, Copy.Timer.walkGuide,
+            Copy.Timer.nextUp(phase: "walk", clock: "1:30"), Copy.Timer.timeLeft("18:00"),
+            Copy.Format.ofCount(5, 10),
 
-            Copy.PostWorkout.eyebrow, Copy.PostWorkout.title, Copy.PostWorkout.body,
+            Copy.PostWorkout.eyebrow(week: 2, day: 1), Copy.PostWorkout.title(intervals: 5),
+            Copy.PostWorkout.summary(minutes: 22, intervals: 5), Copy.PostWorkout.feelPrompt,
+            Copy.PostWorkout.intervalsHeld, Copy.PostWorkout.weekSessions(2),
             Copy.PostWorkout.easyLabel, Copy.PostWorkout.hardLabel, Copy.PostWorkout.save, Copy.PostWorkout.skip,
+
+            Copy.PlanSetup.fromBeginningTitle, Copy.PlanSetup.fromBeginningBody,
+            Copy.PlanSetup.fromSpecificTitle, Copy.PlanSetup.fromSpecificBody,
+            Copy.PlanSetup.startFromHere,
 
             Copy.Calendar.statTime, Copy.Calendar.statFelt, Copy.Calendar.statStatus, Copy.Calendar.statusDone,
             Copy.Calendar.pillToday, Copy.Calendar.pillScheduled, Copy.Calendar.nothingScheduled,
 
-            Copy.Settings.title, Copy.Settings.appearance, Copy.Settings.plan,
+            Copy.Settings.title, Copy.Settings.plan,
             Copy.Settings.trainingPlanRow, Copy.Settings.trainingPlanValue,
             Copy.Settings.scheduleRow, Copy.Settings.scheduleValueNotSet,
             Copy.Settings.audio, Copy.Settings.dimOtherAudio, Copy.Settings.dimOtherAudioCaption,

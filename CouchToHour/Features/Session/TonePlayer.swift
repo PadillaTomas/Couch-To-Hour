@@ -29,6 +29,10 @@ extension TonePlaying {
 /// the media-volume buttons, heard even with the ringer muted — and fires
 /// Core Haptics patterns strong enough to feel with the phone in a pocket.
 ///
+/// A silent looping track plays for the whole session so the `audio`
+/// background mode keeps the app running while the phone is locked or another
+/// app is in front: the countdown stays accurate and the cues fire on time.
+///
 /// Not unit-tested: audio and haptics are device-only. Tests drive the timer
 /// with ``SilentTonePlayer`` / a spy.
 final class SessionCuePlayer: TonePlaying {
@@ -50,6 +54,14 @@ final class SessionCuePlayer: TonePlaying {
     private lazy var tickPlayer = ToneSynth.player([(880, 0.07)], volume: 0.85)
     private lazy var changePlayer = ToneSynth.player([(784, 0.13), (1175, 0.16)], volume: 1)
     private lazy var donePlayer = ToneSynth.player([(659, 0.13), (880, 0.13), (1319, 0.28)], volume: 1)
+
+    /// One second of silence, looped for the whole session. Holds the `audio`
+    /// background mode so the timer keeps ticking with the screen locked.
+    private lazy var keepAlivePlayer: AVAudioPlayer? = {
+        let player = ToneSynth.player([(0, 1.0)], volume: 0)
+        player?.numberOfLoops = -1
+        return player
+    }()
 
     private func play(_ player: AVAudioPlayer?) {
         guard let player else { return }
@@ -119,30 +131,33 @@ final class SessionCuePlayer: TonePlaying {
     // MARK: TonePlaying
 
     func countdownTick() {
+        duckOthers(for: 0.1)
         play(tickPlayer)   // sound only — a buzz every second is too much
     }
 
     func phaseChange() {
+        duckOthers(for: 0.35)
         play(changePlayer)
         vibrate(seconds: 0.5)
     }
 
     func sessionFinished() {
+        duckOthers(for: 0.6)
         play(donePlayer)
         vibrate(seconds: 0.4, count: 3)
     }
 
     func sessionDidBegin() {
         // `.playback` ignores the mute switch; `.mixWithOthers` keeps the
-        // runner's music going alongside our cues, optionally ducked under them.
+        // runner's music going alongside our cues. Ducking is applied per-cue
+        // (see `duckOthers`) so the silent keep-alive loop doesn't hold other
+        // audio down for the whole session.
         // Off the main thread — `setActive` can stall the UI (Apple's warning).
-        let dims = dimsOtherAudio
-        audioQueue.async {
-            var options: AVAudioSession.CategoryOptions = [.mixWithOthers]
-            if dims { options.insert(.duckOthers) }
+        audioQueue.async { [weak self] in
             let session = AVAudioSession.sharedInstance()
-            try? session.setCategory(.playback, mode: .default, options: options)
+            try? session.setCategory(.playback, mode: .default, options: [.mixWithOthers])
             try? session.setActive(true)
+            self?.keepAlivePlayer?.play()
         }
 
         [tickPlayer, changePlayer, donePlayer].forEach { $0?.prepareToPlay() }   // synth now
@@ -151,9 +166,24 @@ final class SessionCuePlayer: TonePlaying {
 
     func sessionDidEnd() {
         stopHaptics()
-        audioQueue.async {
+        audioQueue.async { [weak self] in
+            self?.keepAlivePlayer?.stop()
             try? AVAudioSession.sharedInstance()
                 .setActive(false, options: .notifyOthersOnDeactivation)
+        }
+    }
+
+    /// Briefly dip other apps' audio around a cue, when the "Dim other audio"
+    /// setting is on. A no-op otherwise.
+    private func duckOthers(for seconds: TimeInterval) {
+        guard dimsOtherAudio else { return }
+        audioQueue.async {
+            try? AVAudioSession.sharedInstance()
+                .setCategory(.playback, mode: .default, options: [.mixWithOthers, .duckOthers])
+        }
+        audioQueue.asyncAfter(deadline: .now() + seconds + 0.3) {
+            try? AVAudioSession.sharedInstance()
+                .setCategory(.playback, mode: .default, options: [.mixWithOthers])
         }
     }
 }

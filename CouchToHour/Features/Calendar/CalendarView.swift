@@ -72,16 +72,11 @@ struct CalendarView: View {
 
             switch info {
             case .sessions(let items):
-                VStack(spacing: 0) {
+                WKInsetGroup {
                     ForEach(items) { item in
-                        if item.id != items.first?.id {
-                            Divider().overlay(WKColor.border)
-                        }
                         sessionRow(item)
                     }
                 }
-                .background(WKColor.surface)
-                .clipShape(RoundedRectangle(cornerRadius: WKRadius.card, style: .continuous))
             case .rest:
                 Text(Copy.Calendar.nothingScheduled)
                     .wkFont(.body).foregroundStyle(WKColor.textSecondary)
@@ -118,9 +113,7 @@ struct CalendarView: View {
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(WKColor.textTertiary)
             }
-            .frame(minHeight: 52)
-            .padding(.horizontal, WKSpace.lg)
-            .contentShape(Rectangle())
+            .wkRowMetrics()
         }
         .buttonStyle(.plain)
     }
@@ -146,27 +139,30 @@ struct CalendarView: View {
 private struct SessionDetailSheet: View {
     let item: CalendarDayInfo.Item
 
+    @Environment(\.dismiss) private var dismiss
     @State private var viewerImage: ViewerImage?
 
     private struct ViewerImage: Identifiable { let id = UUID(); let image: UIImage }
 
     var body: some View {
-        ScrollView {
+        WKSheet(title: Copy.Calendar.dayTitle(week: item.week, day: item.day),
+                onClose: { dismiss() }) {
             VStack(alignment: .leading, spacing: WKSpace.xl) {
-                HStack(alignment: .firstTextBaseline, spacing: WKSpace.md) {
-                    Text(Copy.Calendar.dayTitle(week: item.week, day: item.day))
-                        .wkFont(.titleM).foregroundStyle(WKColor.textPrimary)
-                    if case .scheduled(let isToday) = item.status {
-                        WKPill(isToday ? Copy.Calendar.pillToday : Copy.Calendar.pillScheduled,
-                               tone: isToday ? .run : .neutral)
-                    }
+                if case .scheduled(let isToday) = item.status {
+                    WKPill(isToday ? Copy.Calendar.pillToday : Copy.Calendar.pillScheduled,
+                           tone: isToday ? .run : .neutral)
                 }
 
                 if case .done(let seconds, let rating, _) = item.status {
-                    HStack(spacing: WKSpace.xxl) {
-                        stat(Copy.Calendar.statTime, WKTimeFormat.clock(seconds))
-                        if let rating { stat(Copy.Calendar.statFelt, Copy.Calendar.feltValue(rating)) }
-                        stat(Copy.Calendar.statStatus, Copy.Calendar.statusDone)
+                    VStack(spacing: 0) {
+                        WKMetricRow(title: Copy.Calendar.statTime,
+                                    value: WKTimeFormat.clock(seconds))
+                        if let rating {
+                            WKMetricRow(title: Copy.Calendar.statFelt,
+                                        value: Copy.Calendar.feltValue(rating))
+                        }
+                        WKMetricRow(title: Copy.Calendar.statStatus,
+                                    value: Copy.Calendar.statusDone)
                     }
                 }
 
@@ -176,13 +172,7 @@ private struct SessionDetailSheet: View {
                     SessionPhoto(fileName: photoFile) { viewerImage = ViewerImage(image: $0) }
                 }
             }
-            .padding(.horizontal, WKSpace.xl)
-            .padding(.top, WKSpace.xl)
-            .padding(.bottom, WKSpace.xxl)
-            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .background(WKColor.bg.ignoresSafeArea())
-        .presentationDragIndicator(.visible)
         .fullScreenCover(item: $viewerImage) { entry in
             PhotoViewer(image: entry.image) { viewerImage = nil }
         }
@@ -199,12 +189,6 @@ private struct SessionDetailSheet: View {
         }
     }
 
-    private func stat(_ label: String, _ value: String) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(label).wkFont(.caption).foregroundStyle(WKColor.textTertiary)
-            Text(value).wkFont(.headline).foregroundStyle(WKColor.textPrimary)
-        }
-    }
 }
 
 /// A stored session photo. Shows a placeholder while loading, the image once

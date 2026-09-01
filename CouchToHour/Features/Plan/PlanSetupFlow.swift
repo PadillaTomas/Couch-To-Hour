@@ -6,14 +6,12 @@ import UIWorkouts
 /// from Settings when the runner wants to change their setup. It only *collects*
 /// a ``PlanSetup``; the caller persists it (`OnboardingCompletion.apply`).
 struct PlanSetupFlow: View {
-    struct Coord: Equatable { var week: Int; var day: Int }
-
     enum Context: Equatable {
         /// First launch: no history, pick a starting week.
         case onboarding
-        /// Re-run from Settings: seed from `current`, offer "continue where you
-        /// left off" pointing at `continueAt` (the next not-done session).
-        case reconfigure(current: PlanSetup, continueAt: Coord?)
+        /// Re-run from Settings: seed from `current`; start from the beginning or
+        /// pick a specific workout.
+        case reconfigure(current: PlanSetup)
     }
 
     let context: Context
@@ -43,10 +41,6 @@ struct PlanSetupFlow: View {
     private var step: Step { steps[min(stepIndex, steps.count - 1)] }
     private var isLastStep: Bool { stepIndex >= steps.count - 1 }
 
-    private var continueCoord: Coord? {
-        if case .reconfigure(_, let c) = context { return c }
-        return nil
-    }
     private var isReconfigure: Bool {
         if case .reconfigure = context { return true }
         return false
@@ -77,8 +71,7 @@ struct PlanSetupFlow: View {
                 .padding(WKSpace.lg)
         case .startingPoint:
             if isReconfigure {
-                StartingPointStep(continueCoord: continueCoord,
-                                  pickSpecific: $pickSpecificWorkout,
+                StartingPointStep(pickSpecific: $pickSpecificWorkout,
                                   weekIndex: $startingWeekIndex,
                                   dayIndex: $startingDayIndex)
                     .padding(WKSpace.lg)
@@ -125,21 +118,21 @@ struct PlanSetupFlow: View {
     private func seedOnce() {
         guard !didSeed else { return }
         didSeed = true
-        guard case .reconfigure(let current, _) = context else { return }
+        guard case .reconfigure(let current) = context else { return }
         mode = current.mode
         startingWeekIndex = max(0, current.startingWeek - 1)
         startingDayIndex = max(0, current.startingDay - 1)
-        pickSpecificWorkout = false
+        // Reopen on the runner's current pick if it isn't the very start.
+        pickSpecificWorkout = current.startingWeek > 1 || current.startingDay > 1
     }
 
     private func buildSetup() -> PlanSetup {
         let m = mode ?? .threeDay
-        var week = startingWeekIndex + 1
-        var day = startingDayIndex + 1
-        if isReconfigure, !pickSpecificWorkout, let c = continueCoord {
-            week = c.week
-            day = c.day
-        }
+        // Reconfigure: "from the beginning" pins W1D1; "specific workout" uses the
+        // browser pick. Onboarding: always the week the runner chose.
+        let usesPick = !isReconfigure || pickSpecificWorkout
+        let week = usesPick ? startingWeekIndex + 1 : 1
+        let day = usesPick ? startingDayIndex + 1 : 1
         let day0 = Calendar.current.startOfDay(for: startDate)
         return PlanSetup(
             mode: m,

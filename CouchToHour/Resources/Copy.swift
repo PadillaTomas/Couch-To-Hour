@@ -88,9 +88,25 @@ enum Copy {
         static var missedContinueTodayTitle: String { String(localized: "today.missed.continueTodayTitle") }
     }
 
+    /// Shared number/format fragments.
+    enum Format {
+        static func ofCount(_ done: Int, _ total: Int) -> String {
+            String(localized: "format.ofCount", defaultValue: "\(done) of \(total)")
+        }
+    }
+
     enum Timer {
         static var runCaption: String { String(localized: "timer.runCaption") }
         static var walkCaption: String { String(localized: "timer.walkCaption") }
+        /// The one reassuring line under the dial.
+        static var runGuide: String { String(localized: "timer.runGuide") }
+        static var walkGuide: String { String(localized: "timer.walkGuide") }
+        static func nextUp(phase: String, clock: String) -> String {
+            String(localized: "timer.nextUp", defaultValue: "Next · \(phase) \(clock)")
+        }
+        static func timeLeft(_ clock: String) -> String {
+            String(localized: "timer.timeLeft", defaultValue: "\(clock) left")
+        }
         static var pause: String { String(localized: "timer.pause") }
         static var resume: String { String(localized: "timer.resume") }
         static var endSession: String { String(localized: "timer.endSession") }
@@ -101,9 +117,21 @@ enum Copy {
     }
 
     enum PostWorkout {
-        static var eyebrow: String { String(localized: "postWorkout.eyebrow") }
-        static var title: String { String(localized: "postWorkout.title") }
-        static var body: String { String(localized: "postWorkout.body") }
+        static func eyebrow(week: Int, day: Int) -> String {
+            String(localized: "postWorkout.eyebrow", defaultValue: "Week \(week) · Day \(day) complete")
+        }
+        static func title(intervals: Int) -> String {
+            String(localized: "postWorkout.title", defaultValue: "That's \(intervals) behind you")
+        }
+        static func summary(minutes: Int, intervals: Int) -> String {
+            String(localized: "postWorkout.summary",
+                   defaultValue: "\(minutes) minutes, all \(intervals) intervals held")
+        }
+        static var feelPrompt: String { String(localized: "postWorkout.feelPrompt") }
+        static var intervalsHeld: String { String(localized: "postWorkout.intervalsHeld") }
+        static func weekSessions(_ week: Int) -> String {
+            String(localized: "postWorkout.weekSessions", defaultValue: "Week \(week) sessions")
+        }
         static var easyLabel: String { String(localized: "postWorkout.easyLabel") }
         static var hardLabel: String { String(localized: "postWorkout.hardLabel") }
         static var addPhoto: String { String(localized: "postWorkout.addPhoto") }
@@ -145,11 +173,14 @@ enum Copy {
     enum PlanSetup {
         static var save: String { String(localized: "planSetup.save") }
         static var cancel: String { String(localized: "planSetup.cancel") }
-        static var continueTitle: String { String(localized: "planSetup.continueTitle") }
         static func coord(week: Int, day: Int) -> String {
             String(localized: "planSetup.coord", defaultValue: "Week \(week) · Day \(day)")
         }
-        static var pickTitle: String { String(localized: "planSetup.pickTitle") }
+        static var fromBeginningTitle: String { String(localized: "planSetup.fromBeginningTitle") }
+        static var fromBeginningBody: String { String(localized: "planSetup.fromBeginningBody") }
+        static var fromSpecificTitle: String { String(localized: "planSetup.fromSpecificTitle") }
+        static var fromSpecificBody: String { String(localized: "planSetup.fromSpecificBody") }
+        static var startFromHere: String { String(localized: "planSetup.startFromHere") }
         static func dayLabel(_ n: Int) -> String {
             String(localized: "planSetup.dayLabel", defaultValue: "Day \(n)")
         }
@@ -179,7 +210,6 @@ enum Copy {
 
     enum Settings {
         static var title: String { String(localized: "settings.title") }
-        static var appearance: String { String(localized: "settings.appearance") }
         static var plan: String { String(localized: "settings.plan") }
         static var trainingPlanRow: String { String(localized: "settings.trainingPlanRow") }
         static var trainingPlanValue: String { String(localized: "settings.trainingPlanValue") }

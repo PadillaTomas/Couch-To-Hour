@@ -10,6 +10,9 @@ import UIWorkouts
 /// the starting week isn't chosen), on from Settings.
 struct PlanOverviewView: View {
     var showsProgress: Bool = true
+    /// When set, the browser is in "pick a workout" mode: each expanded day gets
+    /// a "Start from here" button that calls this with its `(week, day)`.
+    var onSelectDay: ((_ week: Int, _ day: Int) -> Void)? = nil
 
     @Environment(\.dismiss) private var dismiss
     @Query private var plans: [WorkoutPlan]
@@ -34,7 +37,9 @@ struct PlanOverviewView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: WKSpace.xl) {
-                    WKScreenHeader(title: Copy.PlanOverview.title, body: Copy.PlanOverview.body)
+                    WKScreenHeader(title: onSelectDay == nil ? Copy.PlanOverview.title
+                                                             : Copy.PlanSetup.fromSpecificTitle,
+                                   body: Copy.PlanOverview.body)
 
                     if let overview {
                         ForEach(overview.weeks) { week in
@@ -98,10 +103,16 @@ struct PlanOverviewView: View {
                                             repeatCount: group.repeatCount)
                         }
                     }
+                    if let onSelectDay {
+                        WKButton(Copy.PlanSetup.startFromHere, style: .primary, size: .compact) {
+                            onSelectDay(day.week, day.day)
+                        }
+                        .padding(.top, WKSpace.xs)
+                    }
                 }
             }
         }
-        .opacity(day.state == .beforeStart ? 0.55 : 1)
+        .opacity(day.state == .beforeStart && onSelectDay == nil ? 0.55 : 1)
     }
 
     @ViewBuilder
